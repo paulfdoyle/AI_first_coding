@@ -365,6 +365,12 @@ select, input[type="text"], input[type="search"], input:not([type]) {
   color: #fff;
 }
 .btn.primary:hover { background: #1e40af; border-color: #1e40af; color: #fff; }
+.btn.danger {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: #fff;
+}
+.btn.danger:hover { background: #b91c1c; border-color: #b91c1c; color: #fff; }
 .nav {
   display: flex;
   gap: 8px;
@@ -383,6 +389,7 @@ select, input[type="text"], input[type="search"], input:not([type]) {
   color: var(--text);
 }
 .nav-link:hover { border-color: var(--accent); color: var(--accent); }
+.nav-home,
 .nav-project,
 .nav-bug,
 .nav-process {

@@ -18,16 +18,35 @@ How to use AI\_first for process, project management, and bug management. Use su
 \section*{Activation (First Session)}
 \begin{itemize}
   \item Copy the \texttt{AI\_first/} directory into your repo root.
+  \item Open \path{AI_first/ui/index.html} as the bundle landing page.
   \item Open \path{AI_first/ui/PM.html} and \\
     \path{AI_first/ui/bugmgmt_issues.html} to identify active work and open issues.
   \item Choose the active project, bug, or action you are taking on.
-  \item Create or update the stage action file once you know the active work.
+  \item Create or update the stage action file at \\
+    \texttt{AI\_first/projects/<project>/phases/phase<NN>/actions/} \\
+    \texttt{<project>\_phase<NN>\_stage\_<name>\_action.md}.
   \item Record decisions and updates in the stage action file as you go.
+\end{itemize}
+
+\subsection*{Context Launch Prompt}
+Use this before selecting any persona so every session starts from the same entry point.
+Use the Context Launch prompt in \path{AI_first/ui/index.html} or \path{AI_first/ui/process_guide.html}
+and copy it into your AI session.
+\begin{itemize}
+  \item \texttt{Context Launch: Review AI\_first/ui/index.html,} \\
+    \texttt{AI\_first/ui/PM.html, AI\_first/ui/bugmgmt\_issues.html,} \\
+    \texttt{AI\_first/docs/process.md,} \\
+    \texttt{AI\_first/docs/projectplan.md, and AI\_first/docs/project\_wide\_docs/personas.md.} \\
+    \texttt{Identify the active project, phase, and stage action file; list open bugs;} \\
+    \texttt{summarize current status; and ask which persona to activate next} \\
+    \texttt{(default Reviewer/Sponsor, then Project/Process Manager).} \\
+    \texttt{If no stage action file exists, propose the file path} \\
+    \texttt{using the naming convention.}
 \end{itemize}
 
 \subsection*{Repo Layout}
 \begin{itemize}
-  \item Support tooling lives under \texttt{AI\_first/} (process docs, BugMgmt, UI reports).
+  \item Support tooling lives under \texttt{AI\_first/} (process docs, Bug Management (BugMgmt), UI reports).
   \item Project planning docs live under \texttt{AI\_first/projects/}.
   \item Add product workspace directories in downstream repos as needed (outside \texttt{AI\_first/}).
 \end{itemize}
@@ -49,6 +68,10 @@ Use scripts only when you want to regenerate UI views. The day-to-day workflow i
 \begin{itemize}
   \item Keep content PII-free unless explicitly required.
   \item Prefer local assets and deterministic outputs.
+  \item Bug Management (BugMgmt) is optional; remove or ignore \texttt{AI\_first/bugmgmt/}, \\
+    \texttt{AI\_first/ui/bugmgmt\_issues.html}, and \texttt{AI\_first/scripts/issues.py} \\
+    if you do not need it, and remove the Bug Management link from navigation if desired.
+  \item Run scripts from the repo root; use \texttt{python3} (or \texttt{python} if mapped to Python 3).
   \item Update this guide when the process changes.
 \end{itemize}
 
@@ -66,18 +89,23 @@ Use scripts only when you want to regenerate UI views. The day-to-day workflow i
 
 \subsection*{AI Prompt Examples}
 \begin{itemize}
-  \item Review Context: \texttt{Review AI\_first/ui/PM.html, AI\_first/ui/bugmgmt\_issues.html,} \\
-    \texttt{AI\_first/docs/process.md, AI\_first/docs/projectplan.md, and} \\
-    \texttt{AI\_first/docs/project\_wide\_docs/personas.md. Summarize the current} \\
-    \texttt{phase and active stage action file.}
-  \item Activate Personas: \texttt{Activate Project Manager Persona. Review the active} \\
+  \item Review Context: \texttt{Context Launch: Review AI\_first/ui/index.html,} \\
+    \texttt{AI\_first/ui/PM.html, AI\_first/ui/bugmgmt\_issues.html,} \\
+    \texttt{AI\_first/docs/process.md,} \\
+    \texttt{AI\_first/docs/projectplan.md, and AI\_first/docs/project\_wide\_docs/personas.md.} \\
+    \texttt{Identify the active project, phase, and stage action file; list open bugs;} \\
+    \texttt{summarize current status; and ask which persona to activate next} \\
+    \texttt{(default Reviewer/Sponsor, then Project/Process Manager).} \\
+    \texttt{If no stage action file exists, propose the file path} \\
+    \texttt{using the naming convention.}
+  \item Activate Personas: \texttt{Activate Project/Process Manager Persona. Review the active} \\
     \texttt{stage action file and propose 3 next actions with acceptance criteria} \\
     \texttt{and risks.}
   \item Plan and Update: \texttt{Draft updates for the stage action file and related project} \\
     \texttt{docs. Note next steps and owners.}
   \item Execute: \texttt{Act as Developer Persona. Implement the chosen action, summarize} \\
     \texttt{changes, and draft closure notes for the stage action file} \\
-    \texttt{(and Bug Mgmt entry if applicable).}
+    \texttt{(and Bug Management entry if applicable).}
 \end{itemize}
 
 \subsection*{Artifact Map (Source of Truth)}
@@ -90,21 +118,22 @@ This map mirrors the AI-first Loop and points to the source-of-truth artifacts f
   \item Plan and Update: \path{AI_first/docs/templates/phase_definition_template.md}, \\
     \path{AI_first/docs/templates/phase_action_plan_template.md}, \\
     \path{AI_first/docs/templates/action_stage_template.md}.
-  \item Execute: \path{AI_first/ui/PM.html} (and Bug Mgmt when work is bug-driven). \\
+  \item Execute: \path{AI_first/ui/PM.html} (and Bug Management when work is bug-driven). \\
     Log validation notes in the stage action file.
 \end{itemize}
 
 \section*{Personas and Windows}
-Default to three terminals or windows: Project Mgmt, Developer, and QA. Keep each perspective visible while AI drafts and you validate the work.
+Default to three terminals or windows: Project Management, Developer, and QA. Keep each perspective visible while AI drafts and you validate the work.
 \begin{itemize}
-  \item Terminal 1 (Project Mgmt): review the project plan, active phase docs, and action plan in one view; log decisions and keep project actions aligned.
+  \item Terminal 1 (Project Management): review the project plan, active phase docs, and action plan in one view; log decisions and keep project actions aligned.
   \item Terminal 2 (Developer): work on implementation, track local changes, and validate results; update stage action files as work completes.
-  \item Terminal 3 (QA): draft and verify bug entries, confirm reproduction steps, and log test notes; use Bug Mgmt to track open and closed issues.
+  \item Terminal 3 (QA): draft and verify bug entries, confirm reproduction steps, and log test notes; use Bug Management to track open and closed issues.
 \end{itemize}
 
 \subsection*{AI Prompt Examples}
 \begin{itemize}
-  \item Project Manager Persona: \texttt{Activate Project Manager Persona. Select the active} \\
+  \item Project/Process Manager Persona: \\
+    \texttt{Activate Project/Process Manager Persona. Select the active} \\
     \texttt{project and phase, review the stage action file, and continue from the last} \\
     \texttt{update with 3 next actions and acceptance criteria.}
   \item Developer Persona: \texttt{Activate Developer Persona. Select the active project and} \\
@@ -119,8 +148,9 @@ Default to three terminals or windows: Project Mgmt, Developer, and QA. Keep eac
 
 \subsection*{Persona Responsibilities}
 \begin{itemize}
-  \item Project Manager Persona: define phases and actions in \path{AI_first/docs/projectplan.md} and phase docs; confirm scope and acceptance criteria; use \path{AI_first/ui/PM.html} as the portfolio view.
-  \item Developer Persona: execute the active stage action file; analyze root cause and propose fixes in BugMgmt; update status as work moves to \texttt{in\_progress} and \texttt{closed}.
+  \item Project/Process Manager Persona: \\
+    define phases and actions in \path{AI_first/docs/projectplan.md} and phase docs; confirm scope and acceptance criteria; use \path{AI_first/ui/PM.html} as the portfolio view.
+  \item Developer Persona: execute the active stage action file; analyze root cause and propose fixes in Bug Management; update status as work moves to \texttt{in\_progress} and \texttt{closed}.
   \item QA Persona: draft bug entries with AI and confirm reproduction steps; validate fixes and update notes for closed issues; use \path{AI_first/ui/bugmgmt_issues.html} for audit visibility.
 \end{itemize}
 

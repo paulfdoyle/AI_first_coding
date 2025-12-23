@@ -131,10 +131,12 @@ def _build_doc(md_path: Path, out_path: Path, repo_root: Path) -> None:
     title = _extract_title(md_text, md_path.stem)
     body = _render_markdown(md_text)
     css_path = repo_root / "AI_first" / "ui" / "style" / "bugmgmt.css"
+    home_path = repo_root / "AI_first" / "ui" / "index.html"
     pm_path = repo_root / "AI_first" / "ui" / "PM.html"
     bug_path = repo_root / "AI_first" / "ui" / "bugmgmt_issues.html"
     process_path = repo_root / "AI_first" / "ui" / "process_guide.html"
     css_rel = os.path.relpath(css_path, start=out_path.parent)
+    home_rel = os.path.relpath(home_path, start=out_path.parent)
     pm_rel = os.path.relpath(pm_path, start=out_path.parent)
     bug_rel = os.path.relpath(bug_path, start=out_path.parent)
     process_rel = os.path.relpath(process_path, start=out_path.parent)
@@ -151,9 +153,10 @@ def _build_doc(md_path: Path, out_path: Path, repo_root: Path) -> None:
 <body>
   <div class=\"container\">
     <nav class=\"top-nav\">
-      <a class=\"nav-link nav-project\" href=\"{pm_rel}\">Project Mgmt</a>
-      <a class=\"nav-link nav-bug\" href=\"{bug_rel}\">Bug Mgmt</a>
-      <a class=\"nav-link nav-process\" href=\"{process_rel}\">Process Mgmt</a>
+      <a class=\"nav-link nav-home\" href=\"{home_rel}\">Home</a>
+      <a class=\"nav-link nav-process\" href=\"{process_rel}\">Process Management</a>
+      <a class=\"nav-link nav-project\" href=\"{pm_rel}\">Project Management</a>
+      <a class=\"nav-link nav-bug\" href=\"{bug_rel}\">Bug Management</a>
     </nav>
     <header class=\"hero\">
       <div>

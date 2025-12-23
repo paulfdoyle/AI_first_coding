@@ -3,17 +3,20 @@
 Use this guide to spin up a new project from the Vibe Template.
 
 ## Setup
+Automation steps are optional; use them only when you need to regenerate UI outputs.
+
 1) Copy the `AI_first/` directory into your target repo root.
    - Keep `AI_first/` as the drop-in bundle; do your product work outside it.
-2) Optionally create a virtual environment: `python3 -m venv .venv && source .venv/bin/activate`.
+2) Open `AI_first/ui/index.html` via file:// to get oriented.
+3) Optionally create a virtual environment: `python3 -m venv .venv && source .venv/bin/activate`.
    - Keep `.venv/` out of version control (the template includes a `.gitignore`).
-3) Start the doc watcher if you want automatic updates while editing docs (from the repo root): `python3 AI_first/scripts/watch_docs.py`.
-4) Regenerate BugMgmt exports (if using BugMgmt):
+4) Start the doc watcher if you want automatic updates while editing docs (from the repo root): `python3 AI_first/scripts/watch_docs.py`.
+5) Regenerate BugMgmt exports (if using BugMgmt):
    ```bash
    python3 AI_first/scripts/issues.py list --format json --output AI_first/bugmgmt/exports/json/bugmgmt_issues.json
    python3 AI_first/scripts/issues.py list --format html --output AI_first/ui/bugmgmt_issues.html
    ```
-5) Open `AI_first/ui/bugmgmt_issues.html` via file:// to confirm UI assets load locally.
+6) Open `AI_first/ui/bugmgmt_issues.html` via file:// to confirm UI assets load locally.
 
 ## Process and personas
 - Read `AI_first/docs/process.md` for the standard flow and persona defaults.

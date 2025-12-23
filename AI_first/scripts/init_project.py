@@ -150,7 +150,7 @@ def _render_project_row(
         {indent}    <div class="muted small">Supporting</div>
         {indent}    <div class="links">
         {indent}      <a href="docs/projects/{project}/phases/phase01/phase_definition.html">Phase Def</a>
-        {indent}      <a href="bugmgmt_issues.html">Bug Mgmt</a>
+        {indent}      <a href="bugmgmt_issues.html">Bug Management</a>
         {indent}    </div>
         {indent}  </td>
         {indent}</tr>"""
@@ -239,9 +239,10 @@ def _write_project_detail_page(
         <body>
           <div class="container">
             <nav class="top-nav">
-              <a class="nav-link nav-project" href="PM.html">Project Mgmt</a>
-              <a class="nav-link nav-bug" href="bugmgmt_issues.html">Bug Mgmt</a>
-              <a class="nav-link nav-process" href="process_guide.html">Process Mgmt</a>
+              <a class="nav-link nav-home" href="index.html">Home</a>
+              <a class="nav-link nav-process" href="process_guide.html">Process Management</a>
+              <a class="nav-link nav-project" href="PM.html">Project Management</a>
+              <a class="nav-link nav-bug" href="bugmgmt_issues.html">Bug Management</a>
             </nav>
             <header class="hero">
               <div>
@@ -391,7 +392,7 @@ def _update_projectplan(
         - **{project} (planning)**
           - Summary: `AI_first/projects/{project}/project_summary_{project}.md`
           - Phases root: `AI_first/projects/{project}/phases/`
-          - Issues log: use Bug Mgmt entries with `project: "{project}"`
+          - Issues log: use Bug Management entries with `project: "{project}"`
           - Phases overview:
             - Phase 01 — {phase_name} (planning): see `AI_first/projects/{project}/phases/phase01/`.
           - Phase directory map:
@@ -629,7 +630,7 @@ def main() -> None:
     if not args.no_ui:
         print("  - Review AI_first/ui/PM.html and the new AI_first/ui/project_<project>.html detail page.")
     print("  - Run python3 AI_first/scripts/render_docs.py to refresh AI_first/ui/docs/.")
-    print("  - Regenerate Bug Mgmt exports if you changed issues or prefixes.")
+    print("  - Regenerate Bug Management exports if you changed issues or prefixes.")
 
 
 if __name__ == "__main__":

@@ -9,15 +9,16 @@
 <body>
   <div class="container">
     <nav class="top-nav">
-      <a class="nav-link nav-project" href="PM.html">Project Mgmt</a>
-      <a class="nav-link nav-bug" href="bugmgmt_issues.html">Bug Mgmt</a>
-      <a class="nav-link nav-process" href="process_guide.html">Process Mgmt</a>
+      <a class="nav-link nav-home" href="index.html">Home</a>
+      <a class="nav-link nav-process" href="process_guide.html">Process Management</a>
+      <a class="nav-link nav-project" href="PM.html">Project Management</a>
+      <a class="nav-link nav-bug" href="bugmgmt_issues.html">Bug Management</a>
     </nav>
     <div class="tabs">
       <button class="tab is-active" data-tab="ai-first-loop" type="button">AI-first Loop</button>
       <button class="tab" data-tab="personas-windows" type="button">Personas and Windows</button>
       <button class="tab" data-tab="project-planning" type="button">Project Planning</button>
-      <button class="tab" data-tab="bug-management" type="button">Bug Mgmt Workflow</button>
+      <button class="tab" data-tab="bug-management" type="button">Bug Management Workflow</button>
     </div>
     <header class="hero">
       <div>
@@ -30,41 +31,59 @@
     </header>
 
     <section class="card">
-      <h2 class="h4">Activation (First Session)</h2>
-      <p class="muted small">Start with the support views to find work, then move through the loop and persona windows to capture decisions.</p>
-      <ul class="muted small">
-        <li>Copy the <code>AI_first/</code> directory into your repo root.</li>
-        <li>Open <a href="PM.html">PM.html</a> and <a href="bugmgmt_issues.html">Bug Mgmt</a> to identify active work and open issues.</li>
-        <li>Choose the active project, bug, or action you are taking on.</li>
-        <li>Create or update the stage action file once you know the active work.</li>
-        <li>Record decisions and updates in the stage action file as you go.</li>
-      </ul>
       <details class="block">
-        <summary class="h4">Repo Layout</summary>
+        <summary class="h4">Activation (First Session)</summary>
+        <p class="muted small">Start with the support views to find work, then move through the loop and persona windows to capture decisions.</p>
         <ul class="muted small">
-          <li>Support tooling lives under <code>AI_first/</code> (process docs, BugMgmt, UI reports).</li>
-          <li>Project planning docs live under <code>AI_first/projects/</code>.</li>
-          <li>Add product workspace directories in downstream repos as needed (outside <code>AI_first/</code>).</li>
+          <li>Copy the <code>AI_first/</code> directory into your repo root.</li>
+          <li>Open <a href="index.html">AI_first/ui/index.html</a> as the bundle landing page.</li>
+          <li>Open <a href="PM.html">PM.html</a> and <a href="bugmgmt_issues.html">Bug Management</a> to identify active work and open issues.</li>
+          <li>Choose the active project, bug, or action you are taking on.</li>
+          <li>Create or update the stage action file at <code>AI_first/projects/&lt;project&gt;/phases/phase&lt;NN&gt;/actions/&lt;project&gt;_phase&lt;NN&gt;_stage_&lt;name&gt;_action.md</code>.</li>
+          <li>Record decisions and updates in the stage action file as you go.</li>
         </ul>
+        <details class="block">
+          <summary class="h4">Repo Layout</summary>
+          <ul class="muted small">
+            <li>Support tooling lives under <code>AI_first/</code> (process docs, Bug Management (BugMgmt), UI reports).</li>
+            <li>Project planning docs live under <code>AI_first/projects/</code>.</li>
+            <li>Add product workspace directories in downstream repos as needed (outside <code>AI_first/</code>).</li>
+          </ul>
+        </details>
+        <details class="block">
+          <summary class="h4">Optional Automation</summary>
+          <p class="muted small">Use scripts only when you want to regenerate UI views. The day-to-day workflow is AI-first and doc-driven.</p>
+          <ul class="muted small">
+            <li><code>python3 AI_first/scripts/render_docs.py</code> to render markdown into <code>AI_first/ui/docs/</code>.</li>
+            <li><code>python3 AI_first/scripts/watch_docs.py</code> to auto-render while editing.</li>
+            <li><code>python3 AI_first/scripts/init_project.py --project &lt;project&gt; --prefix &lt;PREFIX&gt; --owner "Name"</code> to scaffold a project.</li>
+            <li><code>python3 AI_first/scripts/issues.py list --format json --output AI_first/bugmgmt/exports/json/bugmgmt_issues.json</code> to regenerate JSON.</li>
+            <li><code>python3 AI_first/scripts/issues.py list --format html --output AI_first/ui/bugmgmt_issues.html</code> to regenerate the HTML report.</li>
+          </ul>
+        </details>
+        <details class="block">
+          <summary class="h4">Notes</summary>
+          <ul class="muted small">
+            <li>Keep content PII-free unless explicitly required.</li>
+            <li>Prefer local assets and deterministic outputs.</li>
+            <li>Bug Management (BugMgmt) is optional; remove or ignore <code>AI_first/bugmgmt/</code>, <code>AI_first/ui/bugmgmt_issues.html</code>, and <code>AI_first/scripts/issues.py</code> if you do not need it, and remove the Bug Management link from navigation if desired.</li>
+            <li>Run scripts from the repo root; use <code>python3</code> (or <code>python</code> if mapped to Python 3).</li>
+            <li>Update this guide when the process changes.</li>
+          </ul>
+        </details>
       </details>
+    </section>
+
+    <section class="card">
+      <h2 class="h4">Context Launch Prompt</h2>
+      <p class="muted small">Use this before selecting any persona so every session starts from the same entry point.</p>
+      <div class="badges">
+        <button class="btn danger" type="button" id="copyContextPrompt">Copy Prompt</button>
+        <span class="muted small" id="copyContextPromptStatus" role="status" aria-live="polite"></span>
+      </div>
       <details class="block">
-        <summary class="h4">Optional Automation</summary>
-        <p class="muted small">Use scripts only when you want to regenerate UI views. The day-to-day workflow is AI-first and doc-driven.</p>
-        <ul class="muted small">
-          <li><code>python3 AI_first/scripts/render_docs.py</code> to render markdown into <code>AI_first/ui/docs/</code>.</li>
-          <li><code>python3 AI_first/scripts/watch_docs.py</code> to auto-render while editing.</li>
-          <li><code>python3 AI_first/scripts/init_project.py --project &lt;project&gt; --prefix &lt;PREFIX&gt; --owner "Name"</code> to scaffold a project.</li>
-          <li><code>python3 AI_first/scripts/issues.py list --format json --output AI_first/bugmgmt/exports/json/bugmgmt_issues.json</code> to regenerate JSON.</li>
-          <li><code>python3 AI_first/scripts/issues.py list --format html --output AI_first/ui/bugmgmt_issues.html</code> to regenerate the HTML report.</li>
-        </ul>
-      </details>
-      <details class="block">
-        <summary class="h4">Notes</summary>
-        <ul class="muted small">
-          <li>Keep content PII-free unless explicitly required.</li>
-          <li>Prefer local assets and deterministic outputs.</li>
-          <li>Update this guide when the process changes.</li>
-        </ul>
+        <summary class="h4">Prompt Text</summary>
+        <code id="contextPromptText">Context Launch: Review AI_first/ui/index.html, AI_first/ui/PM.html, AI_first/ui/bugmgmt_issues.html, AI_first/docs/process.md, AI_first/docs/projectplan.md, and AI_first/docs/project_wide_docs/personas.md. Identify the active project, phase, and stage action file; list open bugs; summarize current status; and ask which persona to activate next (default Reviewer/Sponsor, then Project/Process Manager). If no stage action file exists, propose the file path using the naming convention.</code>
       </details>
     </section>
 
@@ -74,7 +93,7 @@
       <div class="legend">
         <span class="legend-item"><span class="legend-dot legend-loop"></span>AI-first Loop</span>
         <span class="legend-item"><span class="legend-dot legend-project"></span>Project Planning</span>
-        <span class="legend-item"><span class="legend-dot legend-bug"></span>Bug Mgmt</span>
+        <span class="legend-item"><span class="legend-dot legend-bug"></span>Bug Management</span>
       </div>
       <div class="grid-4">
         <div class="loop-step step-card step-loop">
@@ -109,14 +128,14 @@
           <div class="prompt-card">
             <div class="kicker">Step 1</div>
             <h3 class="h5">Review Context</h3>
-            <p class="muted small">Ask Codex to load the AI_first context before work.</p>
-            <code>Review AI_first/ui/PM.html, AI_first/ui/bugmgmt_issues.html, AI_first/docs/process.md, AI_first/docs/projectplan.md, and AI_first/docs/project_wide_docs/personas.md. Summarize the current phase and active stage action file.</code>
+            <p class="muted small">Use the Context Launch prompt above (Copy Prompt) to start the session.</p>
+            <code id="contextPromptExample"></code>
           </div>
           <div class="prompt-card">
             <div class="kicker">Step 2</div>
             <h3 class="h5">Activate Personas</h3>
             <p class="muted small">Activate personas to define actions and acceptance criteria.</p>
-            <code>Activate Project Manager Persona. Review the active stage action file and propose 3 next actions with acceptance criteria and risks.</code>
+            <code>Activate Project/Process Manager Persona. Review the active stage action file and propose 3 next actions with acceptance criteria and risks.</code>
           </div>
           <div class="prompt-card">
             <div class="kicker">Step 3</div>
@@ -128,7 +147,7 @@
             <div class="kicker">Step 4</div>
             <h3 class="h5">Execute</h3>
             <p class="muted small">Do the developer work and capture outcomes.</p>
-            <code>Act as Developer Persona. Implement the chosen action, summarize changes, and draft closure notes for the stage action file (and Bug Mgmt entry if applicable).</code>
+            <code>Act as Developer Persona. Implement the chosen action, summarize changes, and draft closure notes for the stage action file (and Bug Management entry if applicable).</code>
           </div>
         </div>
       </details>
@@ -142,7 +161,7 @@
               <div class="flow-title">Review Context</div>
               <div class="flow-links">
                 <a href="PM.html">PM.html</a>
-                <a href="bugmgmt_issues.html">Bug Mgmt</a>
+                <a href="bugmgmt_issues.html">Bug Management</a>
                 <a href="docs/process.html">process.md</a>
                 <a href="docs/projectplan.html">projectplan.md</a>
               </div>
@@ -177,10 +196,10 @@
             <div class="flow-content">
               <div class="flow-title">Execute</div>
               <div class="flow-links">
-                <a href="bugmgmt_issues.html">Bug Mgmt</a>
+                <a href="bugmgmt_issues.html">Bug Management</a>
                 <a href="PM.html">PM.html</a>
               </div>
-              <div class="flow-note">Use Bug Mgmt when execution is bug-driven; log validation notes in the stage action file.</div>
+              <div class="flow-note">Use Bug Management when execution is bug-driven; log validation notes in the stage action file.</div>
             </div>
           </div>
         </div>
@@ -189,11 +208,11 @@
 
     <section class="card tab-panel" id="personas-windows" data-tab="personas-windows">
       <h2 class="h4">Personas and Windows</h2>
-      <p class="muted small">Default to three terminals or windows: Project Mgmt, Developer, and QA. Keep each perspective visible while AI drafts and you validate the work.</p>
+      <p class="muted small">Default to three terminals or windows: Project Management, Developer, and QA. Keep each perspective visible while AI drafts and you validate the work.</p>
       <div class="grid-3">
         <div class="loop-step terminal-card terminal-pm">
           <div class="kicker">Terminal 1</div>
-          <h3 class="h5">Project Mgmt</h3>
+          <h3 class="h5">Project Management</h3>
           <p class="muted small">Review the project plan, active phase docs, and action plan in one view.</p>
           <p class="small">Use this window to log decisions and keep project actions aligned.</p>
         </div>
@@ -207,7 +226,7 @@
           <div class="kicker">Terminal 3</div>
           <h3 class="h5">QA</h3>
           <p class="muted small">Draft and verify bug entries, confirm reproduction steps, and log test notes.</p>
-          <p class="small">Use Bug Mgmt to track open and closed issues.</p>
+          <p class="small">Use Bug Management to track open and closed issues.</p>
         </div>
       </div>
       <details class="block">
@@ -215,9 +234,9 @@
         <p class="muted small">Use these prompts to keep each terminal aligned with its persona.</p>
         <div class="prompt-grid">
           <div class="prompt-card">
-            <div class="kicker">Project Manager Persona</div>
+            <div class="kicker">Project/Process Manager Persona</div>
             <p class="muted small">Clarify scope and next actions.</p>
-            <code>Activate Project Manager Persona. Select the active project and phase, review the stage action file, and continue from the last update with 3 next actions and acceptance criteria.</code>
+            <code>Activate Project/Process Manager Persona. Select the active project and phase, review the stage action file, and continue from the last update with 3 next actions and acceptance criteria.</code>
           </div>
           <div class="prompt-card">
             <div class="kicker">Developer Persona</div>
@@ -235,7 +254,7 @@
         <summary class="h4">Persona responsibilities</summary>
         <div class="grid-3">
           <div class="persona-card persona-pm">
-            <div class="kicker">Project Manager Persona</div>
+            <div class="kicker">Project/Process Manager Persona</div>
             <h3 class="h5">Plan and steer</h3>
             <ul class="muted small">
               <li>Define phases and actions in <code>projectplan.md</code> and phase docs.</li>
@@ -248,7 +267,7 @@
             <h3 class="h5">Build and resolve</h3>
             <ul class="muted small">
               <li>Execute the active stage action file.</li>
-              <li>Analyze root cause and propose fixes in BugMgmt.</li>
+              <li>Analyze root cause and propose fixes in Bug Management.</li>
               <li>Update status as work moves to <code>in_progress</code> and <code>closed</code>.</li>
             </ul>
           </div>
@@ -258,7 +277,7 @@
             <ul class="muted small">
               <li>Draft bug entries with AI and confirm reproduction steps.</li>
               <li>Validate fixes and update notes for closed issues.</li>
-              <li>Use <a href="bugmgmt_issues.html">Bug Mgmt</a> for audit visibility.</li>
+              <li>Use <a href="bugmgmt_issues.html">Bug Management</a> for audit visibility.</li>
             </ul>
           </div>
         </div>
@@ -326,7 +345,7 @@
       <h2 class="h4">Bug Management Workflow</h2>
       <p class="muted small">Keep bugs AI-first: capture the issue, work the fix, and confirm closure with evidence.</p>
       <p class="muted small">Use the appropriate persona to draft, execute, and validate updates.</p>
-      <p class="muted small">Primary artifacts: <code>issues.jsonl</code>, the active stage action file, and <a href="bugmgmt_issues.html">Bug Mgmt</a>.</p>
+      <p class="muted small">Primary artifacts: <code>issues.jsonl</code>, the active stage action file, and <a href="bugmgmt_issues.html">Bug Management</a>.</p>
       <div class="grid-3">
         <div class="loop-step step-card step-bug">
           <div class="kicker">Step 1</div>
@@ -399,6 +418,48 @@
         if (panels.some((panel) => panel.dataset.tab === id)) {
           activate(id);
         }
+      }
+
+      const copyButton = document.getElementById("copyContextPrompt");
+      const copyText = document.getElementById("contextPromptText");
+      const copyStatus = document.getElementById("copyContextPromptStatus");
+      const exampleText = document.getElementById("contextPromptExample");
+      const setStatus = (message) => {
+        if (!copyStatus) return;
+        copyStatus.textContent = message;
+        if (message) {
+          setTimeout(() => {
+            copyStatus.textContent = "";
+          }, 2000);
+        }
+      };
+      if (copyText && exampleText) {
+        exampleText.textContent = copyText.textContent.trim();
+      }
+      if (copyButton && copyText) {
+        copyButton.addEventListener("click", async () => {
+          const text = copyText.textContent.trim();
+          try {
+            await navigator.clipboard.writeText(text);
+            setStatus("Copied");
+            return;
+          } catch (err) {
+            const textarea = document.createElement("textarea");
+            textarea.value = text;
+            textarea.setAttribute("readonly", "");
+            textarea.style.position = "absolute";
+            textarea.style.left = "-9999px";
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+              document.execCommand("copy");
+              setStatus("Copied");
+            } catch (err2) {
+              setStatus("Copy failed");
+            }
+            document.body.removeChild(textarea);
+          }
+        });
       }
     })();
   </script>

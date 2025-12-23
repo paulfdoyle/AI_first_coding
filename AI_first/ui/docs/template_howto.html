@@ -9,9 +9,10 @@
 <body>
   <div class="container">
     <nav class="top-nav">
-      <a class="nav-link nav-project" href="../PM.html">Project Mgmt</a>
-      <a class="nav-link nav-bug" href="../bugmgmt_issues.html">Bug Mgmt</a>
-      <a class="nav-link nav-process" href="../process_guide.html">Process Mgmt</a>
+      <a class="nav-link nav-home" href="../index.html">Home</a>
+      <a class="nav-link nav-process" href="../process_guide.html">Process Management</a>
+      <a class="nav-link nav-project" href="../PM.html">Project Management</a>
+      <a class="nav-link nav-bug" href="../bugmgmt_issues.html">Bug Management</a>
     </nav>
     <header class="hero">
       <div>
@@ -27,21 +28,23 @@
         <h1>Template Adoption Guide</h1>
 <p>Use this guide to spin up a new project from the Vibe Template.</p>
 <h2>Setup</h2>
+<p>Automation steps are optional; use them only when you need to regenerate UI outputs.</p>
 <p>1) Copy the <code>AI_first/</code> directory into your target repo root.</p>
 <ul>
 <li>Keep <code>AI_first/</code> as the drop-in bundle; do your product work outside it.</li>
 </ul>
-<p>2) Optionally create a virtual environment: <code>python3 -m venv .venv &amp;&amp; source .venv/bin/activate</code>.</p>
+<p>2) Open <code>AI_first/ui/index.html</code> via file:// to get oriented.</p>
+<p>3) Optionally create a virtual environment: <code>python3 -m venv .venv &amp;&amp; source .venv/bin/activate</code>.</p>
 <ul>
 <li>Keep <code>.venv/</code> out of version control (the template includes a <code>.gitignore</code>).</li>
 </ul>
-<p>3) Start the doc watcher if you want automatic updates while editing docs (from the repo root): <code>python3 AI_first/scripts/watch_docs.py</code>.</p>
-<p>4) Regenerate BugMgmt exports (if using BugMgmt):</p>
+<p>4) Start the doc watcher if you want automatic updates while editing docs (from the repo root): <code>python3 AI_first/scripts/watch_docs.py</code>.</p>
+<p>5) Regenerate BugMgmt exports (if using BugMgmt):</p>
 <pre><code>
    python3 AI_first/scripts/issues.py list --format json --output AI_first/bugmgmt/exports/json/bugmgmt_issues.json
    python3 AI_first/scripts/issues.py list --format html --output AI_first/ui/bugmgmt_issues.html
 </code></pre>
-<p>5) Open <code>AI_first/ui/bugmgmt_issues.html</code> via file:// to confirm UI assets load locally.</p>
+<p>6) Open <code>AI_first/ui/bugmgmt_issues.html</code> via file:// to confirm UI assets load locally.</p>
 <h2>Process and personas</h2>
 <ul>
 <li>Read <code>AI_first/docs/process.md</code> for the standard flow and persona defaults.</li>
