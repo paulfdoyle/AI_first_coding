@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI_first - Quick Start</title>
+  <style>
+    :root {
+      --ink: #0f172a;
+      --muted: #6b7280;
+      --accent: #0b63d8;
+      --panel: #ffffff;
+      --panel-alt: #f1f5f9;
+      --bg: #f5f7fb;
+      --border: #e5e7eb;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+    }
+    .wrap {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 28px 20px 40px;
+    }
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+    header p {
+      margin: 0;
+      color: var(--muted);
+    }
+    .grid {
+      display: grid;
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+      --section-bar: var(--accent);
+    }
+    h2 {
+      margin: -18px -18px 12px;
+      padding: 10px 16px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #fff;
+      background: var(--section-bar);
+      border-radius: 14px 14px 0 0;
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    input {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 13px;
+    }
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+      margin: 6px 0 10px;
+    }
+    pre {
+      background: var(--panel-alt);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      font-family: var(--mono);
+      font-size: 12px;
+      overflow-x: auto;
+      margin: 10px 0;
+    }
+    code { font-family: var(--mono); }
+    .row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--ink);
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn.primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .note {
+      font-size: 12px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>AI_first - Quick Start</h1>
+      <p>Use this page to start the local servers and open the control dashboard on a safe origin (127.0.0.1/localhost).</p>
+    </header>
+
+    <div class="grid">
+      <section class="card">
+        <h2>1) Start both servers (recommended)</h2>
+        <p class="note">Starts the control server (run buttons + live status) and the web server (HTML). Uses <code>.venv/bin/python</code> if present. Stop both with Ctrl+C.</p>
+        <div class="row">
+          <div>
+            <label for="web-port">Web port</label>
+            <input id="web-port" value="8000" />
+          </div>
+          <div>
+            <label for="api-port">API port</label>
+            <input id="api-port" value="8790" />
+          </div>
+        </div>
+        <pre><code id="cmd-text"></code></pre>
+        <button class="btn primary" id="copy-cmd">Copy start command</button>
+      </section>
+
+      <section class="card">
+        <h2>2) Open the dashboard</h2>
+        <p class="note">Always use <strong>127.0.0.1</strong> or <strong>localhost</strong> so the control API can respond.</p>
+        <a class="btn primary" id="open-dashboard" href="http://127.0.0.1:8000/AI_first/ui/ai_first_dashboard.html">Open control dashboard</a>
+      </section>
+
+      <section class="card">
+        <h2>View-only mode (optional)</h2>
+        <p class="note">If you only need the static HTML (no live status / run buttons), start just the web server:</p>
+        <pre><code>python3 -m http.server 8000 --directory .</code></pre>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const webInput = document.getElementById('web-port');
+    const apiInput = document.getElementById('api-port');
+    const cmdText = document.getElementById('cmd-text');
+    const copyBtn = document.getElementById('copy-cmd');
+    const openLink = document.getElementById('open-dashboard');
+
+    function buildCommand() {
+      const webPort = webInput.value.trim() || "8000";
+      const apiPort = apiInput.value.trim() || "8790";
+      const cmd = `./AI_first/scripts/start_ai_first.sh --python ".venv/bin/python" --web-port ${webPort} --api-port ${apiPort}`;
+      cmdText.textContent = cmd;
+      openLink.href = `http://127.0.0.1:${webPort}/AI_first/ui/ai_first_dashboard.html`;
+      localStorage.setItem("ai-first-web-port", webPort);
+      localStorage.setItem("ai-first-api-port", apiPort);
+    }
+
+    function loadDefaults() {
+      const web = localStorage.getItem("ai-first-web-port");
+      const api = localStorage.getItem("ai-first-api-port");
+      if (web) webInput.value = web;
+      if (api) apiInput.value = api;
+    }
+
+    async function copyCommand() {
+      const cmd = cmdText.textContent;
+      if (!cmd) return;
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(cmd);
+        } else {
+          const area = document.createElement('textarea');
+          area.value = cmd;
+          document.body.appendChild(area);
+          area.select();
+          document.execCommand('copy');
+          area.remove();
+        }
+        copyBtn.textContent = "Copied!";
+        setTimeout(() => (copyBtn.textContent = "Copy start command"), 1200);
+      } catch (e) {
+        copyBtn.textContent = "Copy failed";
+        setTimeout(() => (copyBtn.textContent = "Copy start command"), 1200);
+      }
+    }
+
+    [webInput, apiInput].forEach(el => {
+      el.addEventListener('input', buildCommand);
+    });
+    copyBtn.addEventListener('click', copyCommand);
+
+    loadDefaults();
+    buildCommand();
+  </script>
+</body>
+</html>

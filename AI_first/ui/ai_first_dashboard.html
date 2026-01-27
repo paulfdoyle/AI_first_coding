@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI_first Control Panel</title>
+  <link rel="stylesheet" href="style/bugmgmt.css" />
+  <style>
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #9ca3af;
+      box-shadow: 0 0 0 3px rgba(156, 163, 175, 0.2);
+    }
+    .status-dot.ok {
+      background: #16a34a;
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
+    }
+    .status-dot.error {
+      background: #dc2626;
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
+    }
+    .status-dot.loading {
+      background: #f59e0b;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+    }
+    .action-grid {
+      display: grid;
+      gap: 12px;
+    }
+    .action-item {
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+    }
+    .action-item .title {
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .action-item .desc {
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 8px;
+    }
+    .action-item .cmd {
+      font-size: 12px;
+      color: #4b5563;
+      margin-top: 8px;
+    }
+    .job-list {
+      font-size: 12px;
+    }
+    .job {
+      padding: 8px 0;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .job:last-child {
+      border-bottom: none;
+    }
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #111827;
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      pointer-events: none;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .input-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin: 10px 0 6px;
+    }
+    .input-row input {
+      width: 100%;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 12px;
+    }
+    .output-list {
+      font-size: 12px;
+      color: #4b5563;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="top-nav">
+      <a class="nav-link nav-home" href="index.html">Home</a>
+      <a class="nav-link nav-process" href="process_guide.html">Process Management</a>
+      <a class="nav-link nav-project" href="PM.html">Project Management</a>
+      <a class="nav-link nav-bug" href="bugmgmt_issues.html">Bug Management</a>
+      <a class="nav-link nav-control" href="ai_first_dashboard.html">Control Panel</a>
+    </nav>
+    <header class="hero">
+      <div>
+        <h1 class="h4">AI_first Control Panel</h1>
+        <p class="muted small">Run refresh actions from the browser and confirm the control server connection health.</p>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2 class="h4">Connection</h2>
+      <div class="input-row">
+        <div>
+          <label class="muted small">API base</label>
+          <input id="api-base" placeholder="http://127.0.0.1:8790" />
+        </div>
+      </div>
+      <div class="status-row">
+        <button class="btn" id="check-connection">Check connection</button>
+        <span class="status-dot" id="conn-dot"></span>
+        <span class="muted small" id="conn-label">Idle</span>
+        <span class="muted small" id="conn-detail">No checks yet.</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="h4">Quick Actions</h2>
+      <div class="action-grid" id="action-grid"></div>
+    </section>
+
+    <section class="card">
+      <h2 class="h4">Outputs</h2>
+      <div class="output-list" id="output-list">No status yet.</div>
+    </section>
+
+    <section class="card">
+      <h2 class="h4">Recent Jobs</h2>
+      <div class="job-list" id="job-list">No jobs yet.</div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast">Copied command</div>
+
+  <script>
+    const apiInput = document.getElementById("api-base");
+    const checkBtn = document.getElementById("check-connection");
+    const connDot = document.getElementById("conn-dot");
+    const connLabel = document.getElementById("conn-label");
+    const connDetail = document.getElementById("conn-detail");
+    const actionGrid = document.getElementById("action-grid");
+    const jobList = document.getElementById("job-list");
+    const outputList = document.getElementById("output-list");
+    const toast = document.getElementById("toast");
+
+    let apiBase = "";
+    let apiOnline = false;
+    let jobs = [];
+
+    const actions = [
+      {
+        id: "refresh_all",
+        title: "Refresh all",
+        desc: "Render docs + PM report + BugMgmt exports.",
+        fallback: "python3 AI_first/scripts/render_docs.py && python3 AI_first/scripts/render_pm.py && python3 AI_first/scripts/issues.py list --format json --output AI_first/bugmgmt/exports/json/bugmgmt_issues.json && python3 AI_first/scripts/issues.py list --format html --output AI_first/ui/bugmgmt_issues.html"
+      },
+      {
+        id: "render_docs",
+        title: "Render docs",
+        desc: "Refresh AI_first/ui/docs from markdown.",
+        fallback: "python3 AI_first/scripts/render_docs.py"
+      },
+      {
+        id: "render_pm",
+        title: "Render PM report",
+        desc: "Refresh AI_first/ui/PM.html and project detail pages.",
+        fallback: "python3 AI_first/scripts/render_pm.py"
+      },
+      {
+        id: "bugmgmt_export",
+        title: "Export BugMgmt",
+        desc: "Regenerate BugMgmt JSON + HTML exports.",
+        fallback: "python3 AI_first/scripts/issues.py list --format json --output AI_first/bugmgmt/exports/json/bugmgmt_issues.json && python3 AI_first/scripts/issues.py list --format html --output AI_first/ui/bugmgmt_issues.html"
+      }
+    ];
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 1500);
+    }
+
+    async function copyText(text) {
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          const area = document.createElement("textarea");
+          area.value = text;
+          document.body.appendChild(area);
+          area.select();
+          document.execCommand("copy");
+          area.remove();
+        }
+        showToast("Copied command");
+      } catch (e) {
+        showToast("Copy failed");
+      }
+    }
+
+    function setStatus(state, message) {
+      connDot.classList.remove("ok", "error", "loading");
+      if (state) connDot.classList.add(state);
+      connLabel.textContent = message;
+    }
+
+    function loadConfig() {
+      apiBase = localStorage.getItem("ai-first-api-base") || "http://127.0.0.1:8790";
+      apiInput.value = apiBase;
+    }
+
+    function saveConfig() {
+      apiBase = apiInput.value.trim() || "http://127.0.0.1:8790";
+      apiBase = apiBase.replace(/\/+$/, "");
+      localStorage.setItem("ai-first-api-base", apiBase);
+    }
+
+    async function fetchStatus() {
+      saveConfig();
+      setStatus("loading", "Checking...");
+      connDetail.textContent = "Connecting...";
+      try {
+        const resp = await fetch(`${apiBase}/api/status`);
+        if (!resp.ok) throw new Error(`status ${resp.status}`);
+        const payload = await resp.json();
+        apiOnline = true;
+        setStatus("ok", "Connected");
+        connDetail.textContent = `Server time: ${payload.server_time}`;
+        jobs = payload.jobs || [];
+        renderJobs();
+        renderOutputs(payload.outputs || {});
+      } catch (e) {
+        apiOnline = false;
+        setStatus("error", "Offline");
+        connDetail.textContent = "Unable to reach control server.";
+      }
+    }
+
+    function renderJobs() {
+      if (!jobs.length) {
+        jobList.textContent = "No jobs yet.";
+        return;
+      }
+      jobList.innerHTML = jobs.map(job => {
+        const time = job.ended_at || job.started_at || "";
+        return `<div class="job">
+          <div><strong>${job.action}</strong> · ${job.status}</div>
+          <div class="muted small">Started: ${job.started_at || "-"} · Ended: ${job.ended_at || "-"}</div>
+          <div class="muted small">Log: ${job.log_url || "-"}</div>
+        </div>`;
+      }).join("");
+    }
+
+    function renderOutputs(outputs) {
+      const entries = [
+        ["PM report", outputs.pm_html],
+        ["BugMgmt UI", outputs.bugmgmt_html],
+        ["Docs (process)", outputs.docs_process]
+      ];
+      outputList.innerHTML = entries.map(([label, value]) => {
+        return `<div>${label}: <span class="mono">${value || "unknown"}</span></div>`;
+      }).join("");
+    }
+
+    async function runAction(action, fallbackCmd) {
+      if (!apiOnline) {
+        await fetchStatus();
+      }
+      if (!apiOnline) {
+        await copyText(fallbackCmd);
+        return;
+      }
+      try {
+        const resp = await fetch(`${apiBase}/api/run`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action })
+        });
+        if (!resp.ok) throw new Error(`run ${resp.status}`);
+        const job = await resp.json();
+        jobs = [job, ...jobs].slice(0, 8);
+        renderJobs();
+        showToast(`Started ${action}`);
+        pollJob(job.id);
+      } catch (e) {
+        showToast("Failed to start action.");
+      }
+    }
+
+    async function pollJob(jobId) {
+      let done = false;
+      while (!done) {
+        try {
+          const resp = await fetch(`${apiBase}/api/jobs/${jobId}?tail=8`);
+          if (!resp.ok) throw new Error(`job ${resp.status}`);
+          const payload = await resp.json();
+          jobs = [payload, ...jobs.filter(j => j.id !== jobId)].slice(0, 8);
+          renderJobs();
+          if (payload.status === "done" || payload.status === "error") {
+            done = true;
+            await fetchStatus();
+            return;
+          }
+        } catch (e) {
+          done = true;
+        }
+        await new Promise(r => setTimeout(r, 1200));
+      }
+    }
+
+    function renderActions() {
+      actionGrid.innerHTML = actions.map(action => {
+        return `<div class="action-item">
+          <div class="title">${action.title}</div>
+          <div class="desc">${action.desc}</div>
+          <button class="btn" data-action="${action.id}">Run</button>
+          <div class="cmd">Fallback: <span class="mono">${action.fallback}</span></div>
+        </div>`;
+      }).join("");
+      actionGrid.querySelectorAll("button[data-action]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const action = btn.getAttribute("data-action");
+          const spec = actions.find(item => item.id === action);
+          if (!spec) return;
+          runAction(spec.id, spec.fallback);
+        });
+      });
+    }
+
+    apiInput.addEventListener("change", saveConfig);
+    checkBtn.addEventListener("click", fetchStatus);
+
+    loadConfig();
+    renderActions();
+    fetchStatus();
+  </script>
+</body>
+</html>
