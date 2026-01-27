@@ -15,6 +15,11 @@ from typing import Any, Dict, List, Optional
 from urllib.parse import parse_qs, urlparse
 
 ROOT = Path(__file__).resolve().parents[2]
+DATA_DIR = ROOT / "AI_first/data"
+QUICK_ISSUES_PATH = DATA_DIR / "quick_issues.json"
+SIMPLE_PROJECT_PATH = DATA_DIR / "simple_project.json"
+UI_STYLE_SELECTION_PATH = DATA_DIR / "ui_style_selection.json"
+SIMPLE_PROJECT_MD_PATH = ROOT / "AI_first/projects/simple_pm/project_context.md"
 
 
 def _now() -> str:
@@ -44,6 +49,99 @@ def _iso_mtime(path: Path) -> Optional[str]:
     if not path.exists():
         return None
     return time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(path.stat().st_mtime))
+
+
+def _write_json(path: Path, payload: Dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+    tmp.replace(path)
+
+
+def _read_json(path: Path, default: Dict[str, Any]) -> Dict[str, Any]:
+    if not path.exists():
+        _write_json(path, default)
+        return default
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        _write_json(path, default)
+        return default
+
+
+def _default_quick_issues() -> Dict[str, Any]:
+    return {"updated_at": time.strftime("%Y-%m-%d"), "issues": []}
+
+
+def _default_simple_project() -> Dict[str, Any]:
+    return {
+        "title": "Untitled project",
+        "summary": "Describe the current focus, scope, and key decisions here.",
+        "updated_at": time.strftime("%Y-%m-%d"),
+        "entries": [],
+    }
+
+
+def _default_ui_style_selection() -> Dict[str, Any]:
+    return {"active_template_id": "", "notes": "", "updated_at": time.strftime("%Y-%m-%d")}
+
+
+def _next_issue_id(issues: List[Dict[str, Any]], now_date: str) -> str:
+    prefix = f"QI-{now_date[:4]}-{now_date[5:7]}-"
+    numbers: List[int] = []
+    for issue in issues:
+        issue_id = str(issue.get("id") or "")
+        if not issue_id.startswith(prefix):
+            continue
+        tail = issue_id.rsplit("-", 1)[-1]
+        if tail.isdigit():
+            numbers.append(int(tail))
+    next_num = (max(numbers) if numbers else 0) + 1
+    return f"{prefix}{next_num:03d}"
+
+
+def _normalize_status(value: Optional[str]) -> str:
+    value = (value or "").strip().lower()
+    if value in {"open", "in_progress", "closed"}:
+        return value
+    return "open"
+
+
+def _normalize_priority(value: Optional[str]) -> str:
+    value = (value or "").strip().lower()
+    if value in {"high", "medium", "low"}:
+        return value
+    return "medium"
+
+
+def _render_simple_project_md(payload: Dict[str, Any]) -> str:
+    title = (payload.get("title") or "Untitled project").strip()
+    summary = (payload.get("summary") or "").strip() or "Describe the current focus, scope, and key decisions here."
+    entries = payload.get("entries") or []
+    lines = [
+        "# Simple Project Log",
+        "",
+        "## Title",
+        title,
+        "",
+        "## Summary",
+        summary,
+        "",
+        "## Recent Updates",
+    ]
+    if not entries:
+        lines.append("- No updates logged yet.")
+    else:
+        for entry in entries:
+            date = entry.get("date") or ""
+            text = entry.get("text") or ""
+            lines.append(f"- {date} — {text}".strip())
+    return "\n".join(lines) + "\n"
+
+
+def _write_simple_project_md(payload: Dict[str, Any]) -> None:
+    SIMPLE_PROJECT_MD_PATH.parent.mkdir(parents=True, exist_ok=True)
+    SIMPLE_PROJECT_MD_PATH.write_text(_render_simple_project_md(payload), encoding="utf-8")
 
 
 @dataclass(frozen=True)
@@ -181,6 +279,9 @@ class ControlServer:
             "bugmgmt_html": _iso_mtime(ROOT / "AI_first/ui/bugmgmt_issues.html"),
             "docs_process": _iso_mtime(ROOT / "AI_first/ui/docs/process.html"),
         }
+        quick_issues = _read_json(QUICK_ISSUES_PATH, _default_quick_issues())
+        simple_project = _read_json(SIMPLE_PROJECT_PATH, _default_simple_project())
+        ui_style = _read_json(UI_STYLE_SELECTION_PATH, _default_ui_style_selection())
         with self.lock:
             jobs = [asdict(self.jobs[jid]) for jid in self.job_order[-8:]][::-1]
             active_jobs = [
@@ -195,6 +296,15 @@ class ControlServer:
             "repo_root": str(ROOT),
             "api_base": f"http://{self.cfg.host}:{self.cfg.port}",
             "outputs": outputs,
+            "quick_issues": {
+                "count": len(quick_issues.get("issues") or []),
+                "updated_at": quick_issues.get("updated_at"),
+            },
+            "simple_project": {
+                "title": simple_project.get("title"),
+                "updated_at": simple_project.get("updated_at"),
+            },
+            "ui_style": ui_style,
             "actions": [
                 {
                     "id": spec.id,
@@ -344,6 +454,18 @@ def make_handler(server: ControlServer):
             if parsed.path == "/api/status":
                 self._send_json(200, server.status_payload())
                 return
+            if parsed.path == "/api/quick-issues":
+                payload = _read_json(QUICK_ISSUES_PATH, _default_quick_issues())
+                self._send_json(200, payload)
+                return
+            if parsed.path == "/api/simple-project":
+                payload = _read_json(SIMPLE_PROJECT_PATH, _default_simple_project())
+                self._send_json(200, payload)
+                return
+            if parsed.path == "/api/ui-style":
+                payload = _read_json(UI_STYLE_SELECTION_PATH, _default_ui_style_selection())
+                self._send_json(200, payload)
+                return
             if parsed.path.startswith("/api/jobs/"):
                 job_id = parsed.path.rsplit("/", 1)[-1]
                 job = server.get_job(job_id)
@@ -378,9 +500,6 @@ def make_handler(server: ControlServer):
                     server.error_log.clear()
                 self._send_json(200, {"status": "cleared"})
                 return
-            if parsed.path != "/api/run":
-                self._send_json(404, {"error": "not found"})
-                return
             length = int(self.headers.get("Content-Length", "0"))
             raw = self.rfile.read(length) if length else b"{}"
             try:
@@ -388,16 +507,111 @@ def make_handler(server: ControlServer):
             except Exception:
                 self._send_json(400, {"error": "invalid json"})
                 return
-            action = payload.get("action")
-            if action not in server.actions:
-                self._send_json(400, {"error": "invalid action"})
+            if parsed.path == "/api/run":
+                action = payload.get("action")
+                if action not in server.actions:
+                    self._send_json(400, {"error": "invalid action"})
+                    return
+                try:
+                    job = server.start_job(str(action))
+                except Exception as exc:
+                    self._send_json(500, {"error": str(exc)})
+                    return
+                self._send_json(200, asdict(job))
                 return
-            try:
-                job = server.start_job(str(action))
-            except Exception as exc:
-                self._send_json(500, {"error": str(exc)})
+            if parsed.path == "/api/quick-issues":
+                data = _read_json(QUICK_ISSUES_PATH, _default_quick_issues())
+                issues = data.get("issues") or []
+                action = (payload.get("action") or "").strip().lower()
+                now_date = time.strftime("%Y-%m-%d")
+                now_stamp = _now()
+                if not action:
+                    action = "update" if payload.get("id") else "create"
+                if action == "create":
+                    title = (payload.get("title") or "").strip()
+                    if not title:
+                        self._send_json(400, {"error": "title required"})
+                        return
+                    issue_id = _next_issue_id(issues, now_date)
+                    issue = {
+                        "id": issue_id,
+                        "title": title,
+                        "status": _normalize_status(payload.get("status")),
+                        "priority": _normalize_priority(payload.get("priority")),
+                        "owner": (payload.get("owner") or "unassigned").strip() or "unassigned",
+                        "tags": payload.get("tags") or [],
+                        "notes": (payload.get("notes") or "").strip(),
+                        "created_at": now_stamp,
+                        "updated_at": now_stamp,
+                    }
+                    if isinstance(issue["tags"], str):
+                        issue["tags"] = [t.strip() for t in issue["tags"].split(",") if t.strip()]
+                    issues.append(issue)
+                elif action in {"update", "close"}:
+                    issue_id = (payload.get("id") or "").strip()
+                    if not issue_id:
+                        self._send_json(400, {"error": "id required"})
+                        return
+                    target = next((i for i in issues if str(i.get("id")) == issue_id), None)
+                    if not target:
+                        self._send_json(404, {"error": "issue not found"})
+                        return
+                    if action == "close":
+                        target["status"] = "closed"
+                    if "title" in payload:
+                        target["title"] = (payload.get("title") or "").strip()
+                    if "status" in payload:
+                        target["status"] = _normalize_status(payload.get("status"))
+                    if "priority" in payload:
+                        target["priority"] = _normalize_priority(payload.get("priority"))
+                    if "owner" in payload:
+                        target["owner"] = (payload.get("owner") or "unassigned").strip() or "unassigned"
+                    if "tags" in payload:
+                        tags = payload.get("tags") or []
+                        if isinstance(tags, str):
+                            tags = [t.strip() for t in tags.split(",") if t.strip()]
+                        target["tags"] = tags
+                    if "notes" in payload:
+                        target["notes"] = (payload.get("notes") or "").strip()
+                    target["updated_at"] = now_stamp
+                else:
+                    self._send_json(400, {"error": "invalid action"})
+                    return
+                data["issues"] = issues
+                data["updated_at"] = now_date
+                _write_json(QUICK_ISSUES_PATH, data)
+                self._send_json(200, data)
                 return
-            self._send_json(200, asdict(job))
+            if parsed.path == "/api/simple-project":
+                data = _read_json(SIMPLE_PROJECT_PATH, _default_simple_project())
+                now_date = time.strftime("%Y-%m-%d")
+                if "title" in payload:
+                    data["title"] = (payload.get("title") or "Untitled project").strip()
+                if "summary" in payload:
+                    data["summary"] = (payload.get("summary") or "").strip()
+                if "entries" in payload and isinstance(payload.get("entries"), list):
+                    data["entries"] = payload.get("entries") or []
+                if "entry" in payload:
+                    entry_text = (payload.get("entry") or "").strip()
+                    if entry_text:
+                        data.setdefault("entries", []).append({"date": now_date, "text": entry_text})
+                data["updated_at"] = now_date
+                _write_json(SIMPLE_PROJECT_PATH, data)
+                _write_simple_project_md(data)
+                self._send_json(200, data)
+                return
+            if parsed.path == "/api/ui-style":
+                data = _read_json(UI_STYLE_SELECTION_PATH, _default_ui_style_selection())
+                now_date = time.strftime("%Y-%m-%d")
+                if "active_template_id" in payload:
+                    data["active_template_id"] = (payload.get("active_template_id") or "").strip()
+                if "notes" in payload:
+                    data["notes"] = (payload.get("notes") or "").strip()
+                data["updated_at"] = now_date
+                _write_json(UI_STYLE_SELECTION_PATH, data)
+                self._send_json(200, data)
+                return
+            self._send_json(404, {"error": "not found"})
 
         def log_message(self, format: str, *args: Any) -> None:
             return

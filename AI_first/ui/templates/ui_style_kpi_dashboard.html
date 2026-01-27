@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KPI Dashboard UI Template</title>
+  <style>
+    :root {
+      --ink: #0f172a;
+      --muted: #64748b;
+      --bg: #eef2f7;
+      --panel: #ffffff;
+      --border: #e2e8f0;
+      --accent: #0ea5e9;
+      --accent-2: #22c55e;
+      --accent-3: #f97316;
+      --mono: "Courier New", Courier, monospace;
+      --sans: "Verdana", "Geneva", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 20%, rgba(14, 165, 233, 0.18), transparent 45%),
+        radial-gradient(circle at 85% 10%, rgba(34, 197, 94, 0.15), transparent 40%),
+        var(--bg);
+      padding: 26px;
+    }
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      gap: 18px;
+    }
+    .hero {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      display: grid;
+      gap: 6px;
+      box-shadow: 0 12px 20px rgba(15, 23, 42, 0.08);
+    }
+    .hero h1 { margin: 0; font-size: 26px; }
+    .hero .meta { color: var(--muted); font-size: 12px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      display: grid;
+      gap: 6px;
+    }
+    .card .label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .card .value { font-size: 22px; font-weight: 700; }
+    .donut {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: conic-gradient(
+        var(--accent) 0% 48%,
+        var(--accent-2) 48% 76%,
+        var(--accent-3) 76% 100%
+      );
+      position: relative;
+      margin: 0 auto;
+    }
+    .donut::after {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px var(--border) inset;
+    }
+    .donut-center {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-family: var(--mono);
+      font-size: 14px;
+    }
+    .panel-row {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 14px;
+    }
+    .list {
+      display: grid;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--muted);
+      background: #fff;
+    }
+    @media (max-width: 900px) {
+      .panel-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>Operational KPI Dashboard</h1>
+      <div class="meta">Last refresh: 2026-01-27 09:45 · System healthy</div>
+      <div class="list">
+        <div class="pill">Scope: Stage overview</div>
+        <div class="pill">Owner: Ops</div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <div class="label">Total programmes</div>
+        <div class="value">48</div>
+      </div>
+      <div class="card">
+        <div class="label">Ready</div>
+        <div class="value">36</div>
+      </div>
+      <div class="card">
+        <div class="label">At risk</div>
+        <div class="value">8</div>
+      </div>
+      <div class="card">
+        <div class="label">Blocked</div>
+        <div class="value">4</div>
+      </div>
+    </section>
+
+    <section class="panel-row">
+      <div class="card">
+        <div class="label">Completion mix</div>
+        <div class="donut">
+          <div class="donut-center">76%</div>
+        </div>
+        <div class="list">
+          <div>Ready: 36</div>
+          <div>At risk: 8</div>
+          <div>Blocked: 4</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="label">Focus items</div>
+        <div class="list">
+          <div>• Validate stage 6 CRNs</div>
+          <div>• Publish school dashboards</div>
+          <div>• Confirm semester 2 requests</div>
+          <div>• Run QA checklist</div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

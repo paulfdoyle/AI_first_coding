@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Report Table UI Template</title>
+  <style>
+    :root {
+      --ink: #111827;
+      --muted: #6b7280;
+      --bg: #f8fafc;
+      --panel: #ffffff;
+      --border: #e5e7eb;
+      --accent: #2563eb;
+      --tag-a: #dbeafe;
+      --tag-b: #dcfce7;
+      --tag-c: #fef3c7;
+      --tag-d: #fee2e2;
+      --mono: "Courier New", Courier, monospace;
+      --sans: "Gill Sans", "Trebuchet MS", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      color: var(--ink);
+      background:
+        linear-gradient(180deg, rgba(37, 99, 235, 0.08), transparent 40%),
+        var(--bg);
+      padding: 24px;
+    }
+    .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+    .hero {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      box-shadow: 0 10px 18px rgba(17, 24, 39, 0.08);
+    }
+    .hero h1 { margin: 0 0 6px; font-size: 22px; }
+    .hero .meta { color: var(--muted); font-size: 12px; }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    .summary-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+    .summary-card .label { font-size: 12px; color: var(--muted); }
+    .summary-card .value { font-size: 20px; font-weight: 700; }
+    .tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .tag {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 7px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .tag.a { background: var(--tag-a); color: #1d4ed8; }
+    .tag.b { background: var(--tag-b); color: #166534; }
+    .tag.c { background: var(--tag-c); color: #92400e; }
+    .tag.d { background: var(--tag-d); color: #991b1b; }
+    .table-wrap {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    th, td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f1f5f9;
+      color: #475569;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .mono { font-family: var(--mono); }
+    .legend {
+      background: #f9fafb;
+      border-bottom: 1px solid var(--border);
+      padding: 12px 14px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div>
+        <h1>Report Table — CRN Cleaning</h1>
+        <div class="meta">Generated 2026-01-27 · Term 202520</div>
+      </div>
+      <div class="tags">
+        <span class="tag a">A Banner</span>
+        <span class="tag b">B Brightspace</span>
+        <span class="tag c">C Proposed</span>
+        <span class="tag d">D Missing</span>
+      </div>
+    </section>
+
+    <section class="summary">
+      <div class="summary-card">
+        <div class="label">Total rows</div>
+        <div class="value">312</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">No lecturer</div>
+        <div class="value">24</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">No CRN</div>
+        <div class="value">8</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">Multiple CRNs</div>
+        <div class="value">17</div>
+      </div>
+    </section>
+
+    <div class="table-wrap">
+      <div class="legend">
+        Legend: <span class="tag a">A</span> Banner CRNs · <span class="tag b">B</span> Brightspace · <span class="tag c">C</span> Proposed CRN · <span class="tag d">D</span> Missing data
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>School</th>
+            <th>Programme</th>
+            <th>Year</th>
+            <th>Module ID</th>
+            <th>Module Name</th>
+            <th>CRNs</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Engineering</td>
+            <td>TU123</td>
+            <td>3</td>
+            <td class="mono">MECH3030</td>
+            <td>Applied Thermodynamics</td>
+            <td><span class="tag a">A</span> 40213, 40215</td>
+            <td>Multiple CRNs in Banner.</td>
+          </tr>
+          <tr>
+            <td>Business</td>
+            <td>TU456</td>
+            <td>2</td>
+            <td class="mono">BUS2010</td>
+            <td>Financial Accounting</td>
+            <td><span class="tag c">C</span> 51012</td>
+            <td>Proposed CRN by rule.</td>
+          </tr>
+          <tr>
+            <td>Science</td>
+            <td>TU789</td>
+            <td>1</td>
+            <td class="mono">BIO1010</td>
+            <td>Intro Biology</td>
+            <td><span class="tag d">D</span> —</td>
+            <td>No CRNs found.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

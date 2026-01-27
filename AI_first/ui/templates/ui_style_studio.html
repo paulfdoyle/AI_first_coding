@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Studio Blocks UI Template</title>
+  <style>
+    :root {
+      --ink: #0f172a;
+      --muted: #475569;
+      --accent: #f97316;
+      --accent-2: #0ea5e9;
+      --accent-3: #22c55e;
+      --paper: #fff7ed;
+      --border: #fed7aa;
+      --sans: "Gill Sans", "Trebuchet MS", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      color: var(--ink);
+      background:
+        linear-gradient(120deg, rgba(249, 115, 22, 0.15), transparent 60%),
+        radial-gradient(circle at 90% 20%, rgba(14, 165, 233, 0.18), transparent 50%),
+        var(--paper);
+    }
+    .wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 30px 22px 48px;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 18px;
+      align-items: center;
+    }
+    h1 {
+      font-size: 40px;
+      margin: 0 0 8px;
+      letter-spacing: 0.02em;
+    }
+    .lede {
+      color: var(--muted);
+      line-height: 1.5;
+      margin: 0;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid var(--border);
+      font-size: 12px;
+      margin-right: 6px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .panel {
+      border-radius: 18px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      background: #fff;
+      box-shadow: 0 12px 22px rgba(15, 23, 42, 0.08);
+    }
+    .panel h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+    }
+    .panel.accent {
+      border-color: transparent;
+      color: #fff;
+    }
+    .accent.one { background: linear-gradient(135deg, #f97316, #fb923c); }
+    .accent.two { background: linear-gradient(135deg, #0ea5e9, #38bdf8); }
+    .accent.three { background: linear-gradient(135deg, #22c55e, #4ade80); }
+    .panel p { margin: 0; font-size: 13px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-size: 12px;
+      text-decoration: none;
+      color: var(--ink);
+      margin-top: 10px;
+    }
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div>
+        <h1>Studio Blocks</h1>
+        <p class="lede">Bold, friendly panels for teams that want clarity and energy. Works well for onboarding dashboards or creative ops.</p>
+        <div style="margin-top: 10px;">
+          <span class="pill">Status: Active</span>
+          <span class="pill">Owner: Studio Team</span>
+        </div>
+      </div>
+      <div class="panel accent one">
+        <h3>Key Goal</h3>
+        <p>Ship a clear landing page with vibrant calls to action.</p>
+      </div>
+    </section>
+
+    <div class="grid">
+      <div class="panel accent two">
+        <h3>Design Sprint</h3>
+        <p>Gather feedback, refine layout, and confirm brand rhythm.</p>
+      </div>
+      <div class="panel accent three">
+        <h3>Build Queue</h3>
+        <p>Implement hero, sections, and responsive grid styles.</p>
+      </div>
+      <div class="panel">
+        <h3>Notes</h3>
+        <p>Keep copy short and pair each section with a bright action.</p>
+        <a class="btn" href="#">View checklist</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Stage Cards UI Template</title>
+  <style>
+    :root {
+      --ink: #1f2937;
+      --muted: #6b7280;
+      --bg: #f6f4f1;
+      --panel: #ffffff;
+      --border: #e5e7eb;
+      --accent: #2563eb;
+      --success: #16a34a;
+      --warning: #f59e0b;
+      --danger: #dc2626;
+      --sans: "Trebuchet MS", "Tahoma", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.12), transparent 40%),
+        radial-gradient(circle at 80% 0%, rgba(245, 158, 11, 0.12), transparent 45%),
+        var(--bg);
+      padding: 28px;
+    }
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .alert {
+      background: rgba(22, 163, 74, 0.12);
+      border: 1px solid rgba(22, 163, 74, 0.35);
+      color: #166534;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 18px;
+    }
+    .hero {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 10px 18px rgba(31, 41, 55, 0.08);
+      margin-bottom: 18px;
+      display: grid;
+      gap: 6px;
+    }
+    .hero h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+    .hero .meta {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+    }
+    .card {
+      background: var(--panel);
+      border: 2px solid var(--accent);
+      border-radius: 14px;
+      padding: 14px;
+      display: grid;
+      gap: 8px;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 6px 14px rgba(31, 41, 55, 0.08);
+    }
+    .card.complete { border-color: var(--success); }
+    .card.progress { border-color: var(--warning); }
+    .card.upcoming { border-color: var(--accent); }
+    .card.blocked { border-color: var(--danger); }
+    .card h3 {
+      margin: 0;
+      font-size: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .badge {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 4px 8px;
+      border-radius: 999px;
+      color: #fff;
+    }
+    .badge.complete { background: var(--success); }
+    .badge.progress { background: var(--warning); color: #3b2f00; }
+    .badge.upcoming { background: var(--accent); }
+    .badge.blocked { background: var(--danger); }
+    .badge.note {
+      background: #fde68a;
+      color: #78350f;
+    }
+    .small {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="alert">Stages 1-3 complete · dashboards in progress</div>
+    <section class="hero">
+      <h1>Stage Roadmap</h1>
+      <div class="small">Select a stage to view tools and status.</div>
+      <div class="meta">Last updated: 2026-01-27 09:30</div>
+    </section>
+
+    <div class="grid">
+      <a class="card complete" href="#">
+        <h3>Stage 1 — Reports <span class="badge complete">Complete</span></h3>
+        <div class="small">Baseline extracts and key queries.</div>
+        <div class="chips"><span class="badge note">Updated</span></div>
+      </a>
+      <a class="card complete" href="#">
+        <h3>Stage 2 — Baseline <span class="badge complete">Complete</span></h3>
+        <div class="small">Testing activities and comparisons.</div>
+        <div class="chips"><span class="badge note">Updated</span></div>
+      </a>
+      <a class="card progress" href="#">
+        <h3>Stage 3 — Priority <span class="badge progress">In progress</span></h3>
+        <div class="small">Priority boards and review cycles.</div>
+        <div class="chips"><span class="badge note">In review</span></div>
+      </a>
+      <a class="card upcoming" href="#">
+        <h3>Stage 4 — Dashboards <span class="badge upcoming">Upcoming</span></h3>
+        <div class="small">Operational dashboards and QA checks.</div>
+      </a>
+      <a class="card blocked" href="#">
+        <h3>Stage 5 — Validation <span class="badge blocked">Blocked</span></h3>
+        <div class="small">Waiting on upstream data feed.</div>
+      </a>
+    </div>
+  </div>
+</body>
+</html>

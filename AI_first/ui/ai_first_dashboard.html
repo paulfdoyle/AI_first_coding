@@ -96,9 +96,82 @@
       padding: 8px 10px;
       font-size: 12px;
     }
+    .input-row select {
+      width: 100%;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 12px;
+      background: #fff;
+    }
     .output-list {
       font-size: 12px;
       color: #4b5563;
+    }
+    .input-row textarea {
+      width: 100%;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 12px;
+      min-height: 90px;
+      resize: vertical;
+    }
+    .style-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 12px;
+    }
+    .style-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 12px;
+      background: #fff;
+      display: grid;
+      gap: 8px;
+    }
+    .style-card .title {
+      font-weight: 700;
+    }
+    .style-card .meta {
+      font-size: 12px;
+      color: #6b7280;
+    }
+    .style-card .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .style-card.active {
+      border-color: #111827;
+      box-shadow: 0 6px 14px rgba(17, 24, 39, 0.12);
+    }
+    .style-active {
+      font-size: 12px;
+      color: #4b5563;
+      margin-top: 6px;
+    }
+    .entry-list {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #4b5563;
+      display: grid;
+      gap: 6px;
+    }
+    .issue-form {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .issue-table select,
+    .issue-table input {
+      font-size: 12px;
+      padding: 6px 8px;
+    }
+    .issue-table td {
+      vertical-align: top;
+      font-size: 12px;
     }
   </style>
 </head>
@@ -135,6 +208,122 @@
     </section>
 
     <section class="card">
+      <h2 class="h4">UI Style Gallery</h2>
+      <p class="muted small">Pick a template, preview it, and copy a Codex hint when you start a new UI build.</p>
+      <div class="style-active" id="style-active">Active style: none selected.</div>
+      <div class="input-row">
+        <div>
+          <label class="muted small">Style notes for Codex</label>
+          <textarea id="style-notes" placeholder="Add extra guidance for the active template..."></textarea>
+        </div>
+      </div>
+      <div class="status-row">
+        <button class="btn" id="save-style-notes">Save notes</button>
+        <button class="btn" id="copy-active-style">Copy active style hint</button>
+      </div>
+      <div class="style-grid" id="style-grid"></div>
+    </section>
+
+    <section class="card">
+      <h2 class="h4">Simple Project Log</h2>
+      <p class="muted small">High-level, agile project context for quick handoff and continuity.</p>
+      <div class="input-row">
+        <div>
+          <label class="muted small">Project title</label>
+          <input id="project-title" placeholder="Project title" />
+        </div>
+      </div>
+      <div class="input-row">
+        <div>
+          <label class="muted small">Current summary</label>
+          <textarea id="project-summary" placeholder="What is the current focus and what decisions matter?"></textarea>
+        </div>
+      </div>
+      <div class="status-row">
+        <button class="btn" id="save-project">Save project log</button>
+        <span class="muted small" id="project-status">Not saved yet.</span>
+      </div>
+      <div class="input-row">
+        <div>
+          <label class="muted small">Add update</label>
+          <input id="project-entry" placeholder="Short update to append to the log" />
+        </div>
+        <div>
+          <label class="muted small">&nbsp;</label>
+          <button class="btn" id="add-project-entry">Add update</button>
+        </div>
+      </div>
+      <div class="entry-list" id="project-entries">No updates yet.</div>
+    </section>
+
+    <section class="card">
+      <h2 class="h4">Quick Issues</h2>
+      <p class="muted small">Lightweight issue list to capture and revisit open items without losing them.</p>
+      <div class="issue-form">
+        <div class="input-row">
+          <div>
+            <label class="muted small">Title</label>
+            <input id="issue-title" placeholder="Issue summary" />
+          </div>
+          <div>
+            <label class="muted small">Owner</label>
+            <input id="issue-owner" placeholder="Owner (optional)" />
+          </div>
+        </div>
+        <div class="input-row">
+          <div>
+            <label class="muted small">Priority</label>
+            <select id="issue-priority">
+              <option value="high">High</option>
+              <option value="medium" selected>Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+          <div>
+            <label class="muted small">Status</label>
+            <select id="issue-status">
+              <option value="open" selected>Open</option>
+              <option value="in_progress">In progress</option>
+              <option value="closed">Closed</option>
+            </select>
+          </div>
+          <div>
+            <label class="muted small">Tags (comma separated)</label>
+            <input id="issue-tags" placeholder="ui, docs" />
+          </div>
+        </div>
+        <div class="input-row">
+          <div>
+            <label class="muted small">Notes</label>
+            <textarea id="issue-notes" placeholder="Context, reproduction, or notes"></textarea>
+          </div>
+        </div>
+        <div class="status-row">
+          <button class="btn" id="add-issue">Add issue</button>
+          <span class="muted small" id="issue-status-label">No issues yet.</span>
+        </div>
+      </div>
+      <div class="table-wrap issue-table">
+        <table class="issues">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Title</th>
+              <th>Status</th>
+              <th>Priority</th>
+              <th>Owner</th>
+              <th>Tags</th>
+              <th>Updated</th>
+              <th>Notes</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="issues-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
       <h2 class="h4">Quick Actions</h2>
       <div class="action-grid" id="action-grid"></div>
     </section>
@@ -150,7 +339,7 @@
     </section>
   </div>
 
-  <div class="toast" id="toast">Copied command</div>
+  <div class="toast" id="toast">Copied</div>
 
   <script>
     const apiInput = document.getElementById("api-base");
@@ -162,10 +351,79 @@
     const jobList = document.getElementById("job-list");
     const outputList = document.getElementById("output-list");
     const toast = document.getElementById("toast");
+    const styleGrid = document.getElementById("style-grid");
+    const styleActive = document.getElementById("style-active");
+    const styleNotes = document.getElementById("style-notes");
+    const saveStyleNotesBtn = document.getElementById("save-style-notes");
+    const copyActiveStyleBtn = document.getElementById("copy-active-style");
+    const projectTitle = document.getElementById("project-title");
+    const projectSummary = document.getElementById("project-summary");
+    const projectStatus = document.getElementById("project-status");
+    const saveProjectBtn = document.getElementById("save-project");
+    const projectEntry = document.getElementById("project-entry");
+    const addProjectEntryBtn = document.getElementById("add-project-entry");
+    const projectEntries = document.getElementById("project-entries");
+    const issueTitle = document.getElementById("issue-title");
+    const issueOwner = document.getElementById("issue-owner");
+    const issuePriority = document.getElementById("issue-priority");
+    const issueStatus = document.getElementById("issue-status");
+    const issueTags = document.getElementById("issue-tags");
+    const issueNotes = document.getElementById("issue-notes");
+    const addIssueBtn = document.getElementById("add-issue");
+    const issueStatusLabel = document.getElementById("issue-status-label");
+    const issuesBody = document.getElementById("issues-body");
 
     let apiBase = "";
     let apiOnline = false;
     let jobs = [];
+    let styleSelection = { active_template_id: "", notes: "" };
+    let simpleProject = null;
+    let quickIssues = [];
+
+    const styleTemplates = [
+      {
+        id: "atlas_ledger",
+        name: "Atlas Ledger",
+        file: "templates/ui_style_atlas.html",
+        summary: "Editorial serif hierarchy with paper texture and calm accents.",
+        hint: "Use the Atlas Ledger UI style: serif headlines (Georgia), muted paper background, warm accent #c05621, card-based layout, and generous whitespace. Reference AI_first/ui/templates/ui_style_atlas.html."
+      },
+      {
+        id: "signal_mono",
+        name: "Signal Mono",
+        file: "templates/ui_style_signal.html",
+        summary: "Technical control surface with mono headers and teal accents.",
+        hint: "Use the Signal Mono UI style: monospace headers, console-like panels, teal accent #0f766e, crisp borders, and light blueprint background. Reference AI_first/ui/templates/ui_style_signal.html."
+      },
+      {
+        id: "studio_blocks",
+        name: "Studio Blocks",
+        file: "templates/ui_style_studio.html",
+        summary: "Bold, colorful blocks for friendly, energetic dashboards.",
+        hint: "Use the Studio Blocks UI style: bold color panels, warm gradients, friendly sans serif (Gill Sans/Trebuchet), and playful pills. Reference AI_first/ui/templates/ui_style_studio.html."
+      },
+      {
+        id: "stage_cards",
+        name: "Stage Cards",
+        file: "templates/ui_style_stage_cards.html",
+        summary: "Stage roadmap card grid with status borders and badges.",
+        hint: "Use the Stage Cards UI style: stage roadmap grid, status-colored borders (green/amber/blue/red), hero panel + alert banner, and small status chips. Reference AI_first/ui/templates/ui_style_stage_cards.html."
+      },
+      {
+        id: "kpi_dashboard",
+        name: "KPI Dashboard",
+        file: "templates/ui_style_kpi_dashboard.html",
+        summary: "Operational KPI overview with donut chart + summary cards.",
+        hint: "Use the KPI Dashboard UI style: KPI cards, donut completion chart, focus list, and soft gradient background with Verdana/mono accents. Reference AI_first/ui/templates/ui_style_kpi_dashboard.html."
+      },
+      {
+        id: "report_table",
+        name: "Report Table",
+        file: "templates/ui_style_report_table.html",
+        summary: "Dense report table with summary cards and legend tags.",
+        hint: "Use the Report Table UI style: summary KPI cards, legend tags, fixed table header styling, and light neutral background. Reference AI_first/ui/templates/ui_style_report_table.html."
+      }
+    ];
 
     const actions = [
       {
@@ -212,10 +470,19 @@
           document.execCommand("copy");
           area.remove();
         }
-        showToast("Copied command");
+        showToast("Copied");
       } catch (e) {
         showToast("Copy failed");
       }
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
     }
 
     function setStatus(state, message) {
@@ -249,6 +516,9 @@
         jobs = payload.jobs || [];
         renderJobs();
         renderOutputs(payload.outputs || {});
+        await fetchStyleSelection();
+        await fetchSimpleProject();
+        await fetchQuickIssues();
       } catch (e) {
         apiOnline = false;
         setStatus("error", "Offline");
@@ -280,6 +550,297 @@
       outputList.innerHTML = entries.map(([label, value]) => {
         return `<div>${label}: <span class="mono">${value || "unknown"}</span></div>`;
       }).join("");
+    }
+
+    async function apiGet(path) {
+      const resp = await fetch(`${apiBase}${path}`);
+      if (!resp.ok) throw new Error(`GET ${path} ${resp.status}`);
+      return await resp.json();
+    }
+
+    async function apiPost(path, payload) {
+      const resp = await fetch(`${apiBase}${path}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload || {})
+      });
+      if (!resp.ok) throw new Error(`POST ${path} ${resp.status}`);
+      return await resp.json();
+    }
+
+    function renderStyleCards() {
+      const activeId = styleSelection.active_template_id;
+      const activeTemplate = styleTemplates.find(t => t.id === activeId);
+      styleActive.textContent = activeTemplate
+        ? `Active style: ${activeTemplate.name}`
+        : "Active style: none selected.";
+      styleNotes.value = styleSelection.notes || "";
+      styleGrid.innerHTML = styleTemplates.map(template => {
+        const isActive = template.id === activeId;
+        return `<div class="style-card ${isActive ? "active" : ""}">
+          <div class="title">${template.name}</div>
+          <div class="meta">${template.summary}</div>
+          <div class="meta">File: <span class="mono">AI_first/ui/${template.file}</span></div>
+          <div class="actions">
+            <a class="btn" href="${template.file}" target="_blank" rel="noopener">Preview</a>
+            <button class="btn" data-style="${template.id}" data-action="copy">Copy hint</button>
+            <button class="btn" data-style="${template.id}" data-action="activate">Set active</button>
+          </div>
+        </div>`;
+      }).join("");
+      styleGrid.querySelectorAll("button[data-style]").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const styleId = btn.getAttribute("data-style");
+          const action = btn.getAttribute("data-action");
+          const template = styleTemplates.find(t => t.id === styleId);
+          if (!template) return;
+          if (action === "copy") {
+            await copyText(buildStyleHint(template));
+            return;
+          }
+          if (action === "activate") {
+            await setActiveStyle(template.id);
+          }
+        });
+      });
+    }
+
+    function buildStyleHint(template) {
+      const notes = (styleSelection.notes || "").trim();
+      if (!notes) return template.hint;
+      return `${template.hint}\nExtra notes: ${notes}`;
+    }
+
+    async function setActiveStyle(styleId) {
+      if (!apiOnline) {
+        await fetchStatus();
+      }
+      if (!apiOnline) {
+        showToast("Control server offline.");
+        return;
+      }
+      try {
+        styleSelection = await apiPost("/api/ui-style", { active_template_id: styleId, notes: styleNotes.value });
+        renderStyleCards();
+        showToast("Active style updated.");
+      } catch (e) {
+        showToast("Failed to update style.");
+      }
+    }
+
+    async function saveStyleNotes() {
+      if (!apiOnline) {
+        await fetchStatus();
+      }
+      if (!apiOnline) {
+        showToast("Control server offline.");
+        return;
+      }
+      try {
+        styleSelection = await apiPost("/api/ui-style", { notes: styleNotes.value, active_template_id: styleSelection.active_template_id });
+        renderStyleCards();
+        showToast("Notes saved.");
+      } catch (e) {
+        showToast("Failed to save notes.");
+      }
+    }
+
+    async function fetchStyleSelection() {
+      if (!apiOnline) return;
+      try {
+        styleSelection = await apiGet("/api/ui-style");
+        renderStyleCards();
+      } catch (e) {
+        renderStyleCards();
+      }
+    }
+
+    function renderSimpleProject() {
+      if (!simpleProject) return;
+      projectTitle.value = simpleProject.title || "";
+      projectSummary.value = simpleProject.summary || "";
+      const entries = simpleProject.entries || [];
+      if (!entries.length) {
+        projectEntries.textContent = "No updates yet.";
+      } else {
+        projectEntries.innerHTML = entries.map(entry => {
+          return `<div>- ${escapeHtml(entry.date)} — ${escapeHtml(entry.text)}</div>`;
+        }).join("");
+      }
+      projectStatus.textContent = `Last saved: ${simpleProject.updated_at || "unknown"}`;
+    }
+
+    async function fetchSimpleProject() {
+      if (!apiOnline) return;
+      try {
+        simpleProject = await apiGet("/api/simple-project");
+        renderSimpleProject();
+      } catch (e) {
+        showToast("Failed to load project log.");
+      }
+    }
+
+    async function saveProjectLog() {
+      if (!apiOnline) {
+        await fetchStatus();
+      }
+      if (!apiOnline) {
+        showToast("Control server offline.");
+        return;
+      }
+      try {
+        simpleProject = await apiPost("/api/simple-project", {
+          title: projectTitle.value,
+          summary: projectSummary.value
+        });
+        renderSimpleProject();
+        showToast("Project log saved.");
+      } catch (e) {
+        showToast("Failed to save project log.");
+      }
+    }
+
+    async function addProjectEntry() {
+      const text = projectEntry.value.trim();
+      if (!text) {
+        showToast("Add a short update first.");
+        return;
+      }
+      if (!apiOnline) {
+        await fetchStatus();
+      }
+      if (!apiOnline) {
+        showToast("Control server offline.");
+        return;
+      }
+      try {
+        simpleProject = await apiPost("/api/simple-project", { entry: text });
+        projectEntry.value = "";
+        renderSimpleProject();
+        showToast("Update added.");
+      } catch (e) {
+        showToast("Failed to add update.");
+      }
+    }
+
+    function renderIssues() {
+      if (!quickIssues.length) {
+        issuesBody.innerHTML = "";
+        issueStatusLabel.textContent = "No issues yet.";
+        return;
+      }
+      issueStatusLabel.textContent = `${quickIssues.length} issue(s)`;
+      issuesBody.innerHTML = quickIssues.map(issue => {
+        const tags = escapeHtml((issue.tags || []).join(", "));
+        const title = escapeHtml(issue.title || "");
+        const owner = escapeHtml(issue.owner || "");
+        const notes = escapeHtml(issue.notes || "");
+        return `<tr>
+          <td class="mono">${escapeHtml(issue.id || "")}</td>
+          <td>${title}</td>
+          <td>
+            <select data-field="status" data-id="${issue.id}">
+              <option value="open"${issue.status === "open" ? " selected" : ""}>Open</option>
+              <option value="in_progress"${issue.status === "in_progress" ? " selected" : ""}>In progress</option>
+              <option value="closed"${issue.status === "closed" ? " selected" : ""}>Closed</option>
+            </select>
+          </td>
+          <td>
+            <select data-field="priority" data-id="${issue.id}">
+              <option value="high"${issue.priority === "high" ? " selected" : ""}>High</option>
+              <option value="medium"${issue.priority === "medium" ? " selected" : ""}>Medium</option>
+              <option value="low"${issue.priority === "low" ? " selected" : ""}>Low</option>
+            </select>
+          </td>
+          <td><input data-field="owner" data-id="${issue.id}" value="${owner}" /></td>
+          <td><input data-field="tags" data-id="${issue.id}" value="${tags}" /></td>
+          <td>${issue.updated_at || issue.created_at || "-"}</td>
+          <td><input data-field="notes" data-id="${issue.id}" value="${notes}" /></td>
+          <td><button class="btn" data-save="${issue.id}">Save</button></td>
+        </tr>`;
+      }).join("");
+      issuesBody.querySelectorAll("button[data-save]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const issueId = btn.getAttribute("data-save");
+          const fields = {};
+          issuesBody.querySelectorAll(`[data-id="${issueId}"]`).forEach(input => {
+            const field = input.getAttribute("data-field");
+            if (!field) return;
+            fields[field] = input.value;
+          });
+          updateIssue(issueId, fields);
+        });
+      });
+    }
+
+    async function fetchQuickIssues() {
+      if (!apiOnline) return;
+      try {
+        const payload = await apiGet("/api/quick-issues");
+        quickIssues = payload.issues || [];
+        renderIssues();
+      } catch (e) {
+        showToast("Failed to load issues.");
+      }
+    }
+
+    async function addIssue() {
+      const title = issueTitle.value.trim();
+      if (!title) {
+        showToast("Issue title required.");
+        return;
+      }
+      if (!apiOnline) {
+        await fetchStatus();
+      }
+      if (!apiOnline) {
+        showToast("Control server offline.");
+        return;
+      }
+      try {
+        const payload = await apiPost("/api/quick-issues", {
+          action: "create",
+          title,
+          owner: issueOwner.value,
+          priority: issuePriority.value,
+          status: issueStatus.value,
+          tags: issueTags.value,
+          notes: issueNotes.value
+        });
+        quickIssues = payload.issues || [];
+        issueTitle.value = "";
+        issueOwner.value = "";
+        issueTags.value = "";
+        issueNotes.value = "";
+        issuePriority.value = "medium";
+        issueStatus.value = "open";
+        renderIssues();
+        showToast("Issue added.");
+      } catch (e) {
+        showToast("Failed to add issue.");
+      }
+    }
+
+    async function updateIssue(issueId, fields) {
+      if (!apiOnline) {
+        await fetchStatus();
+      }
+      if (!apiOnline) {
+        showToast("Control server offline.");
+        return;
+      }
+      try {
+        const payload = await apiPost("/api/quick-issues", {
+          action: "update",
+          id: issueId,
+          ...fields
+        });
+        quickIssues = payload.issues || [];
+        renderIssues();
+        showToast("Issue updated.");
+      } catch (e) {
+        showToast("Failed to update issue.");
+      }
     }
 
     async function runAction(action, fallbackCmd) {
@@ -349,8 +910,21 @@
 
     apiInput.addEventListener("change", saveConfig);
     checkBtn.addEventListener("click", fetchStatus);
+    saveStyleNotesBtn.addEventListener("click", saveStyleNotes);
+    copyActiveStyleBtn.addEventListener("click", async () => {
+      const activeTemplate = styleTemplates.find(t => t.id === styleSelection.active_template_id);
+      if (!activeTemplate) {
+        showToast("Select a style first.");
+        return;
+      }
+      await copyText(buildStyleHint(activeTemplate));
+    });
+    saveProjectBtn.addEventListener("click", saveProjectLog);
+    addProjectEntryBtn.addEventListener("click", addProjectEntry);
+    addIssueBtn.addEventListener("click", addIssue);
 
     loadConfig();
+    renderStyleCards();
     renderActions();
     fetchStatus();
   </script>
