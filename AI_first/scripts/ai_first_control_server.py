@@ -14,12 +14,21 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 from urllib.parse import parse_qs, urlparse
 
+SCRIPTS_DIR = Path(__file__).resolve().parent
+if str(SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_DIR))
+
+from reintegration_lib import run_reintegration
+
 ROOT = Path(__file__).resolve().parents[2]
 DATA_DIR = ROOT / "AI_first/data"
 QUICK_ISSUES_PATH = DATA_DIR / "quick_issues.json"
 SIMPLE_PROJECT_PATH = DATA_DIR / "simple_project.json"
 UI_STYLE_SELECTION_PATH = DATA_DIR / "ui_style_selection.json"
 SIMPLE_PROJECT_MD_PATH = ROOT / "AI_first/projects/simple_pm/project_context.md"
+REINTEGRATION_ROOT = ROOT / "AI_first/reintegration/scratch"
+REINTEGRATION_REPORT = ROOT / "AI_first/reintegration/last_reintegration.json"
+REINTEGRATION_MARKDOWN = ROOT / "AI_first/reintegration/last_reintegration.md"
 
 
 def _now() -> str:
@@ -282,6 +291,7 @@ class ControlServer:
         quick_issues = _read_json(QUICK_ISSUES_PATH, _default_quick_issues())
         simple_project = _read_json(SIMPLE_PROJECT_PATH, _default_simple_project())
         ui_style = _read_json(UI_STYLE_SELECTION_PATH, _default_ui_style_selection())
+        reintegration = _read_json(REINTEGRATION_REPORT, {"last_run": None})
         with self.lock:
             jobs = [asdict(self.jobs[jid]) for jid in self.job_order[-8:]][::-1]
             active_jobs = [
@@ -305,6 +315,7 @@ class ControlServer:
                 "updated_at": simple_project.get("updated_at"),
             },
             "ui_style": ui_style,
+            "reintegration": reintegration,
             "actions": [
                 {
                     "id": spec.id,
@@ -466,6 +477,10 @@ def make_handler(server: ControlServer):
                 payload = _read_json(UI_STYLE_SELECTION_PATH, _default_ui_style_selection())
                 self._send_json(200, payload)
                 return
+            if parsed.path == "/api/reintegration":
+                payload = _read_json(REINTEGRATION_REPORT, {"last_run": None})
+                self._send_json(200, payload)
+                return
             if parsed.path.startswith("/api/jobs/"):
                 job_id = parsed.path.rsplit("/", 1)[-1]
                 job = server.get_job(job_id)
@@ -610,6 +625,24 @@ def make_handler(server: ControlServer):
                 data["updated_at"] = now_date
                 _write_json(UI_STYLE_SELECTION_PATH, data)
                 self._send_json(200, data)
+                return
+            if parsed.path == "/api/reintegration":
+                source_path = (payload.get("source_path") or "").strip()
+                if not source_path:
+                    self._send_json(400, {"error": "source_path required"})
+                    return
+                try:
+                    summary = run_reintegration(
+                        source_path=source_path,
+                        current_ai_first=ROOT / "AI_first",
+                        scratch_root=REINTEGRATION_ROOT,
+                        report_path=REINTEGRATION_REPORT,
+                        markdown_path=REINTEGRATION_MARKDOWN,
+                    )
+                except Exception as exc:
+                    self._send_json(500, {"error": str(exc)})
+                    return
+                self._send_json(200, summary)
                 return
             self._send_json(404, {"error": "not found"})
 

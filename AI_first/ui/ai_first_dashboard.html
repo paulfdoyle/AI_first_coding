@@ -173,6 +173,23 @@
       vertical-align: top;
       font-size: 12px;
     }
+    .reintegration-results {
+      font-size: 12px;
+      color: #4b5563;
+      display: grid;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .reintegration-files {
+      font-size: 12px;
+      color: #4b5563;
+      max-height: 160px;
+      overflow: auto;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 8px;
+      background: #fff;
+    }
   </style>
 </head>
 <body>
@@ -324,6 +341,23 @@
     </section>
 
     <section class="card">
+      <h2 class="h4">Reintegration</h2>
+      <p class="muted small">Copy an external AI_first into scratch and review differences before reintegrating.</p>
+      <div class="input-row">
+        <div>
+          <label class="muted small">Source path (repo or AI_first directory)</label>
+          <input id="reintegration-source" placeholder="/path/to/other/repo" />
+        </div>
+      </div>
+      <div class="status-row">
+        <button class="btn" id="run-reintegration">Run reintegration scan</button>
+        <span class="muted small" id="reintegration-status">No scans yet.</span>
+      </div>
+      <div class="reintegration-results" id="reintegration-results">Awaiting scan.</div>
+      <div class="reintegration-files" id="reintegration-files">No changed files yet.</div>
+    </section>
+
+    <section class="card">
       <h2 class="h4">Quick Actions</h2>
       <div class="action-grid" id="action-grid"></div>
     </section>
@@ -372,6 +406,11 @@
     const addIssueBtn = document.getElementById("add-issue");
     const issueStatusLabel = document.getElementById("issue-status-label");
     const issuesBody = document.getElementById("issues-body");
+    const reintegrationSource = document.getElementById("reintegration-source");
+    const runReintegrationBtn = document.getElementById("run-reintegration");
+    const reintegrationStatus = document.getElementById("reintegration-status");
+    const reintegrationResults = document.getElementById("reintegration-results");
+    const reintegrationFiles = document.getElementById("reintegration-files");
 
     let apiBase = "";
     let apiOnline = false;
@@ -519,6 +558,7 @@
         await fetchStyleSelection();
         await fetchSimpleProject();
         await fetchQuickIssues();
+        await fetchReintegration();
       } catch (e) {
         apiOnline = false;
         setStatus("error", "Offline");
@@ -773,6 +813,70 @@
       });
     }
 
+    function renderReintegration(summary) {
+      if (!summary || !summary.counts) {
+        reintegrationResults.textContent = "Awaiting scan.";
+        reintegrationFiles.textContent = "No changed files yet.";
+        return;
+      }
+      const counts = summary.counts || {};
+      reintegrationResults.innerHTML = `
+        <div>Source: <span class="mono">${escapeHtml(summary.source_ai_first || "")}</span></div>
+        <div>Scratch: <span class="mono">${escapeHtml(summary.scratch_copy || "")}</span></div>
+        <div>Added: ${counts.added || 0} · Removed: ${counts.removed || 0} · Changed: ${counts.changed || 0}</div>
+        <div>Copy mode: ${escapeHtml(summary.copy_mode || "unknown")}</div>
+        <div>Last run: ${escapeHtml(summary.timestamp || "")}</div>
+      `;
+      const warnings = summary.warnings || [];
+      if (warnings.length) {
+        reintegrationResults.innerHTML += `<div class="muted small">Warning: ${escapeHtml(warnings.join(" "))}</div>`;
+      }
+      const changed = summary.changed || [];
+      if (!changed.length) {
+        reintegrationFiles.textContent = "No changed files.";
+        return;
+      }
+      reintegrationFiles.innerHTML = changed.slice(0, 40).map(path => `- ${escapeHtml(path)}`).join("<br />");
+      if (changed.length > 40) {
+        reintegrationFiles.innerHTML += `<br />... ${changed.length - 40} more`;
+      }
+    }
+
+    async function fetchReintegration() {
+      if (!apiOnline) return;
+      try {
+        const summary = await apiGet("/api/reintegration");
+        renderReintegration(summary);
+      } catch (e) {
+        renderReintegration(null);
+      }
+    }
+
+    async function runReintegration() {
+      const sourcePath = reintegrationSource.value.trim();
+      if (!sourcePath) {
+        showToast("Enter a source path.");
+        return;
+      }
+      if (!apiOnline) {
+        await fetchStatus();
+      }
+      if (!apiOnline) {
+        showToast("Control server offline.");
+        return;
+      }
+      try {
+        reintegrationStatus.textContent = "Running scan...";
+        const summary = await apiPost("/api/reintegration", { source_path: sourcePath });
+        reintegrationStatus.textContent = "Scan complete.";
+        renderReintegration(summary);
+        showToast("Reintegration scan complete.");
+      } catch (e) {
+        reintegrationStatus.textContent = "Scan failed.";
+        showToast("Reintegration failed.");
+      }
+    }
+
     async function fetchQuickIssues() {
       if (!apiOnline) return;
       try {
@@ -910,6 +1014,7 @@
 
     apiInput.addEventListener("change", saveConfig);
     checkBtn.addEventListener("click", fetchStatus);
+    runReintegrationBtn.addEventListener("click", runReintegration);
     saveStyleNotesBtn.addEventListener("click", saveStyleNotes);
     copyActiveStyleBtn.addEventListener("click", async () => {
       const activeTemplate = styleTemplates.find(t => t.id === styleSelection.active_template_id);
