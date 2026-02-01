@@ -32,6 +32,12 @@
         <summary class="h4">Prompt Text</summary>
         <code id="contextPromptText">Context Launch: Review AI_first/ui/index.html, AI_first/ui/PM.html, AI_first/ui/bugmgmt_issues.html, AI_first/docs/process.md, AI_first/docs/projectplan.md, and AI_first/docs/project_wide_docs/personas.md. Identify the active project, phase, and stage action file; list open bugs; summarize current status; and ask which persona to activate next (default order: Project Creator/Owner -> Project/Process Manager -> Developer -> QA Lead; add optional personas from AI_first/docs/project_wide_docs/personas.md only when scope triggers them). If no stage action file exists, propose the file path using the naming convention.</code>
       </details>
+      <p class="muted small">Codex skill (optional): install the `activate-ai-first` skill to run this prompt automatically.</p>
+      <ul class="muted small">
+        <li>Install once: <code>cp -R skills/activate-ai-first ~/.codex/skills/</code> (`~` is your home directory).</li>
+        <li>Restart Codex so it loads the skill.</li>
+        <li>Activate with: "activate AI_first" or "run the AI_first context launch prompt".</li>
+      </ul>
     </section>
 
     <section class="card">

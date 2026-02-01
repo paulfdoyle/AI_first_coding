@@ -65,6 +65,11 @@ Run scripts from the repo root; use `python3` (or `python` if it maps to Python 
 - `AI_first/scripts/init_project.py`: scaffold a new project, update `AI_first/docs/projectplan.md`, and add a PM.html row.
 - `AI_first/scripts/issues.py`: regenerate Bug Management JSON/HTML exports.
 
+## Codex skill (optional)
+- Install the `activate-ai-first` skill for use across repos: `cp -R skills/activate-ai-first ~/.codex/skills/`.
+- `~` is your home directory (not the repo root); restart Codex to load the skill.
+- Activate with a request like: "activate AI_first" or "run the AI_first context launch prompt".
+
 ## Source-of-truth stack
 - **Project plan:** `AI_first/docs/projectplan.md` lists active projects and links to `AI_first/projects/<project>/`.
 - **Project directory:** project summary plus phases.
